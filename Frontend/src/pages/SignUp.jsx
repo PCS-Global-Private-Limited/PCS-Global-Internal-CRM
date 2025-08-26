@@ -1,5 +1,6 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import Navbar from "../components/Navbar";
 
 const SignupPage = () => {
   const {
@@ -15,7 +16,7 @@ const SignupPage = () => {
 
   return (
     <div
-      className="relative flex size-full min-h-screen flex-col bg-slate-50 overflow-x-hidden"
+      className="relative flex size-full min-h-screen flex-col bg-slate-50 "
       style={{
         "--select-button-svg":
           "url('data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2724px%27 height=%2724px%27 fill=%27rgb(73,115,156)%27 viewBox=%270 0 256 256%27%3e%3cpath d=%27M181.66,170.34a8,8,0,0,1,0,11.32l-48,48a8,8,0,0,1-11.32,0l-48-48a8,8,0,0,1,11.32-11.32L128,212.69l42.34-42.35A8,8,0,0,1,181.66,170.34Zm-96-84.68L128,43.31l42.34,42.35a8,8,0,0,0,11.32-11.32l-48-48a8,8,0,0,0-11.32,0l-48,48A8,8,0,0,0,85.66,85.66Z%27%3e%3c/path%3e%3c/svg%3e')",
@@ -23,22 +24,8 @@ const SignupPage = () => {
       }}
     >
       <div className="flex h-full grow flex-col">
-        {/* Header */}
-        <header className="flex items-center justify-between border-b border-b-[#e7edf4] px-10 py-3">
-          <div className="flex items-center gap-4 text-[#0d141c]">
-            <div className="size-4">
-              <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M8.57 8.57C5.53 11.63 3.45 15.51 2.61 19.75C1.77 23.98 2.20 28.36 3.85 32.35C5.50 36.33 8.29 39.74 11.88 42.13C15.47 44.53 19.68 45.81 24 45.81C28.31 45.81 32.53 44.53 36.12 42.13C39.70 39.74 42.50 36.33 44.15 32.35C45.80 28.36 46.23 23.98 45.39 19.75C44.55 15.51 42.47 11.63 39.42 8.57L24 24L8.57 8.57Z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
-            <h2 className="text-lg font-bold">Acme Co</h2>
-          </div>
-          <button className="rounded-lg bg-[#0d80f2] px-4 h-10 text-slate-50 text-sm font-bold">
-            Sign In
-          </button>
+        <header className="sticky top-0 z-50">
+          <Navbar />
         </header>
 
         {/* Form Container - Properly centered */}
@@ -111,8 +98,9 @@ const SignupPage = () => {
                     className="rounded-lg bg-[#e7edf4] h-14 p-4 text-base focus:outline-none w-full"
                   >
                     <option value="">Select your branch</option>
-                    <option value="two">Two</option>
-                    <option value="three">Three</option>
+                    <option value="two">Kolkata</option>
+                    <option value="three">Bengalore</option>
+                    <option value="three">Noida</option>
                   </select>
                   {errors.branch && (
                     <span className="text-red-500 text-sm mt-1">
@@ -126,7 +114,7 @@ const SignupPage = () => {
               <InputField
                 label="Designation"
                 name="designation"
-                placeholder="Enter your designation"
+                placeholder="Eg : MERN Stack Developer/JAVA Developer/Data Analyst..."
                 register={register}
                 errors={errors}
                 rules={{ required: "Designation is required" }}
