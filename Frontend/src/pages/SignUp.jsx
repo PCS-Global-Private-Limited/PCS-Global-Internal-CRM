@@ -98,9 +98,9 @@ const SignupPage = () => {
                     className="rounded-lg bg-[#e7edf4] h-14 p-4 text-base focus:outline-none w-full"
                   >
                     <option value="">Select your branch</option>
-                    <option value="two">Kolkata</option>
-                    <option value="three">Bengalore</option>
-                    <option value="three">Noida</option>
+                    <option value="Kolkata">Kolkata</option>
+                    <option value="Bengalore">Bengalore</option>
+                    <option value="Noida">Noida</option>
                   </select>
                   {errors.branch && (
                     <span className="text-red-500 text-sm mt-1">
