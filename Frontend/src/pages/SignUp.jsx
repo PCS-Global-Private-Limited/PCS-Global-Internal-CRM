@@ -1,17 +1,44 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import Navbar from "../components/Navbar";
+const apiUrl = import.meta.env.VITE_API_URL;
+import { useState } from "react";
 
 const SignupPage = () => {
+  const [addError, setAddError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors }, reset
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Form Data:", data);
-    // 👉 send data to your backend API here
+    try {
+      const res = await fetch(`${apiUrl}/api/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        if (res.status === 409 && err.exists) {
+          setAddError("User already present with this email or mobile number");
+          notifyUserExist();
+        } else {
+          setAddError(err.error || "Failed to add contact");
+        }
+        setLoading(false); // ⬅️ stop loading on error
+        // reset();
+        return;
+      }
+    } catch (error) {
+      console.error("Error signing up:", error);
+    }
   };
 
   return (
@@ -128,9 +155,9 @@ const SignupPage = () => {
                 placeholder="Enter your password"
                 register={register}
                 errors={errors}
-                rules={{ 
-                  required: "Password is required", 
-                  minLength: { value: 6, message: "At least 6 characters" } 
+                rules={{
+                  required: "Password is required",
+                  minLength: { value: 6, message: "At least 6 characters" },
                 }}
               />
 
@@ -186,7 +213,9 @@ const InputField = ({
         className="rounded-lg bg-[#e7edf4] h-14 p-4 text-base focus:outline-none w-full focus:ring-2 focus:ring-[#0d80f2] focus:ring-opacity-50 transition-all"
       />
       {errors[name] && (
-        <span className="text-red-500 text-sm mt-1">{errors[name].message}</span>
+        <span className="text-red-500 text-sm mt-1">
+          {errors[name].message}
+        </span>
       )}
     </label>
   </div>
