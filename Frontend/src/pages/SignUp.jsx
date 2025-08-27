@@ -3,16 +3,18 @@ import { useForm } from "react-hook-form";
 import Navbar from "../components/Navbar";
 const apiUrl = import.meta.env.VITE_API_URL;
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
   const [addError, setAddError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    formState: { errors }, reset
+    formState: { errors },
+    reset,
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -33,12 +35,13 @@ const SignupPage = () => {
           setAddError(err.error || "Failed to add contact");
         }
         setLoading(false); // ⬅️ stop loading on error
-        // reset();
         return;
       }
+      navigate("/login");
     } catch (error) {
       console.error("Error signing up:", error);
     }
+    reset();
   };
 
   return (

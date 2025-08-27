@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import userRouter from "./src/routes/user.route.js";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(
 
 // Routes
 app.use("/api", userRouter);
+app.use(cookieParser());
 
 // Database connection
 mongoose.connect(MONGO, {
