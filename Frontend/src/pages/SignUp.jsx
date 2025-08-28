@@ -3,16 +3,18 @@ import { useForm } from "react-hook-form";
 import Navbar from "../components/Navbar";
 const apiUrl = import.meta.env.VITE_API_URL;
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
   const [addError, setAddError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    formState: { errors }, reset
+    formState: { errors },
+    reset,
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -32,10 +34,19 @@ const SignupPage = () => {
       const responseData = await res.json();
       
       if (!res.ok) {
+        const err = await res.json();
+        if (res.status === 409 && err.exists) {
+          setAddError("User already present with this email or mobile number");
+          notifyUserExist();
+        } else {
+          setAddError(err.error || "Failed to add contact");
+        }
+        setLoading(false); // ⬅️ stop loading on error
         setAddError(responseData.message || "Failed to sign up");
         setLoading(false);
         return;
       }
+      navigate("/login");
 
       // Success
       console.log("Signup successful:", responseData);
@@ -49,6 +60,7 @@ const SignupPage = () => {
     } finally {
       setLoading(false);
     }
+    reset();
   };
 
   return (
