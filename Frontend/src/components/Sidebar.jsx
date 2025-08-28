@@ -17,9 +17,9 @@ const Sidebar = ({ activeItem, onItemClick }) => {
     const sidebarItems = [
         { icon: Home, label: 'Dashboard', id: 'dashboard', route: '/manager-dashboard' },
         { icon: CheckSquare, label: 'Tasks', id: 'tasks', route: '/task' },
-        { icon: FileText, label: 'Requests', id: 'requests', route: '/request' },
+        { icon: FileText, label: 'Requests', id: 'requests', route: '/employee-addition-requests' },
         { icon: Users, label: 'Attendance', id: 'attendance', route: '/attendance' },
-        { icon: BarChart3, label: 'Reports', id: 'reports', route: '/report' }
+        { icon: BarChart3, label: 'Reports', id: 'reports', route: '/reports' }
     ];
 
     return (

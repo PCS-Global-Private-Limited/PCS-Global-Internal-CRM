@@ -12,6 +12,8 @@ import CreateTask from "./components/CreateTask";
 import AssignTask from "./components/AssignTask";
 import Task from "./pages/Task";
 import Attendance from "./pages/Attendance";
+import EmployeeAdditionRequests from "./pages/EmployeeAdditionRequests";
+import ReportsDashboard from "./pages/ReportsDashboard ";
 
 const router = createBrowserRouter([
   {
@@ -35,13 +37,13 @@ const router = createBrowserRouter([
     element: <UserDashboard />,
   },
   {
-    path:"/user-dashboard/request-team-member",
+    path: "/user-dashboard/request-team-member",
     element: <RequestTeamMember />
   },
   {
-    path:"/user-dashboard/project-details",
+    path: "/user-dashboard/project-details",
     element: <ProjectDetails />
-  }
+  },
   {
     path: "/manager-dashboard",
     element: <ManagerDashboard />,
@@ -61,6 +63,14 @@ const router = createBrowserRouter([
   {
     path: "/attendance",
     element: <Attendance />,
+  },
+  {
+    path: "/employee-addition-requests",
+    element: <EmployeeAdditionRequests />,
+  },
+  {
+    path: "/reports",
+    element: <ReportsDashboard />,
   },
 ]);
 
