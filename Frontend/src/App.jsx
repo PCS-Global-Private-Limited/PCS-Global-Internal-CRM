@@ -7,6 +7,11 @@ import VerifyEmail from "./pages/VerifyEmail";
 import UserDashboard from "./pages/UserDashboard";
 import RequestTeamMember from "./pages/RequestTeamMember";
 import ProjectDetails from "./pages/ProjectDetails";
+import ManagerDashboard from "./pages/ManagerDashboard";
+import CreateTask from "./components/CreateTask";
+import AssignTask from "./components/AssignTask";
+import Task from "./pages/Task";
+import Attendance from "./pages/Attendance";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +42,26 @@ const router = createBrowserRouter([
     path:"/user-dashboard/project-details",
     element: <ProjectDetails />
   }
+  {
+    path: "/manager-dashboard",
+    element: <ManagerDashboard />,
+  },
+  {
+    path: "/create-task",
+    element: <CreateTask />,
+  },
+  {
+    path: "/assign-task",
+    element: <AssignTask />,
+  },
+  {
+    path: "/task",
+    element: <Task />,
+  },
+  {
+    path: "/attendance",
+    element: <Attendance />,
+  },
 ]);
 
 function App() {
