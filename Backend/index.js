@@ -27,10 +27,7 @@ app.use(
 app.use("/api", userRouter);
 
 // Database connection
-mongoose.connect(MONGO, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(MONGO)
 .then(() => console.log("Connected to MongoDB"))
 .catch((err) => console.error("MongoDB connection error:", err));
 

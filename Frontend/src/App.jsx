@@ -7,6 +7,11 @@ import SignUp from "./pages/SignUp";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import VerifyEmail from "./pages/VerifyEmail";
+import ManagerDashboard from "./pages/ManagerDashboard";
+import CreateTask from "./components/CreateTask";
+import AssignTask from "./components/AssignTask";
+import Task from "./pages/Task";
+import Attendance from "./pages/Attendance";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +29,26 @@ const router = createBrowserRouter([
   {
     path: "/verify-email",
     element: <VerifyEmail />,
+  },
+  {
+    path: "/manager-dashboard",
+    element: <ManagerDashboard />,
+  },
+  {
+    path: "/create-task",
+    element: <CreateTask />,
+  },
+  {
+    path: "/assign-task",
+    element: <AssignTask />,
+  },
+  {
+    path: "/task",
+    element: <Task />,
+  },
+  {
+    path: "/attendance",
+    element: <Attendance />,
   },
 ]);
 
