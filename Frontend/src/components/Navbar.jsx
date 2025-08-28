@@ -1,16 +1,21 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex-shrink-0 text-2xl font-extrabold text-blue-600">
+          <div
+            onClick={() => navigate("/")}
+            className="flex-shrink-0 text-2xl font-extrabold text-blue-600 select-none"
+          >
             PCS GLOBAL CRM
           </div>
 
@@ -19,7 +24,7 @@ const Navbar = () => {
             <Link to="/" className="text-gray-700 hover:text-gray-900">
               Home
             </Link>
-            
+
             <Link
               to="/signup"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"

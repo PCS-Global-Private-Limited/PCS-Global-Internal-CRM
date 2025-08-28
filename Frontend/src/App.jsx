@@ -5,6 +5,8 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import VerifyEmail from "./pages/VerifyEmail";
 import UserDashboard from "./pages/UserDashboard";
+import RequestTeamMember from "./pages/RequestTeamMember";
+import ProjectDetails from "./pages/ProjectDetails";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,14 @@ const router = createBrowserRouter([
     path: "/user-dashboard",
     element: <UserDashboard />,
   },
+  {
+    path:"/user-dashboard/request-team-member",
+    element: <RequestTeamMember />
+  },
+  {
+    path:"/user-dashboard/project-details",
+    element: <ProjectDetails />
+  }
 ]);
 
 function App() {
