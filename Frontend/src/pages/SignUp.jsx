@@ -20,12 +20,19 @@ const SignupPage = () => {
   const onSubmit = async (data) => {
     console.log("Form Data:", data);
     try {
+      setLoading(true);
+      setAddError("");
+      
       const res = await fetch(`${apiUrl}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
+      console.log("Response Status:", res.status);
+      
+      const responseData = await res.json();
+      
       if (!res.ok) {
         const err = await res.json();
         if (res.status === 409 && err.exists) {
@@ -35,11 +42,23 @@ const SignupPage = () => {
           setAddError(err.error || "Failed to add contact");
         }
         setLoading(false); // ⬅️ stop loading on error
+        setAddError(responseData.message || "Failed to sign up");
+        setLoading(false);
         return;
       }
       navigate("/login");
+
+      // Success
+      console.log("Signup successful:", responseData);
+      reset();
+      // You can add navigation here if needed
+      // navigate('/login');
+      
     } catch (error) {
       console.error("Error signing up:", error);
+      setAddError("An error occurred while signing up");
+    } finally {
+      setLoading(false);
     }
     reset();
   };
@@ -175,13 +194,21 @@ const SignupPage = () => {
                 rules={{ required: "Please confirm your password" }}
               />
 
+              {/* Error Message */}
+              {addError && (
+                <div className="text-red-500 text-sm text-center">{addError}</div>
+              )}
+
               {/* Submit */}
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full h-10 flex items-center justify-center rounded-lg bg-[#0d80f2] text-slate-50 text-sm font-bold hover:bg-[#0b6acc] transition-colors"
+                  disabled={loading}
+                  className={`w-full h-10 flex items-center justify-center rounded-lg ${
+                    loading ? 'bg-[#93c2f7] cursor-not-allowed' : 'bg-[#0d80f2] hover:bg-[#0b6acc]'
+                  } text-slate-50 text-sm font-bold transition-colors`}
                 >
-                  Sign Up
+                  {loading ? 'Signing up...' : 'Sign Up'}
                 </button>
               </div>
 
