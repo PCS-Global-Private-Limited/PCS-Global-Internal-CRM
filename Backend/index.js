@@ -14,6 +14,7 @@ const frontEndUrl = process.env.frontend_url;
 
 // Middleware
 app.use(express.json()); // Add this for parsing JSON request bodies
+app.use(cookieParser());
 app.use(
   cors({
     origin: [frontEndUrl],

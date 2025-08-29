@@ -146,4 +146,21 @@ const loginUser = async (req, res) => {
   }
 };
 
-export { signupUser, loginUser };
+const verifyUser = (req, res) => {
+  const token = req.cookies.token;
+  if (!token)
+    return res
+      .status(401)
+      .json({ success: false, message: "Not authenticated" });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
+    res.json({ success: true, userId: decoded.userId });
+  } catch (err) {
+    res
+      .status(401)
+      .json({ success: false, message: "Invalid or expired token" });
+  }
+};
+
+export { signupUser, loginUser, verifyUser };

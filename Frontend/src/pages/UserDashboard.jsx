@@ -2,9 +2,22 @@ import React from "react";
 import { User, Calendar, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { checkAuth } from "../lib";
 
 export default function UserDashboard() {
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    const verifyAuth = async () => {
+      const authStatus = await checkAuth();
+      if (!authStatus) {
+        navigate("/login");
+      }
+    };
+    
+    verifyAuth();
+  }, [navigate]);
 
   const tasks = [
     {
