@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { checkAuth } from "../lib";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -10,6 +11,17 @@ const Login = () => {
   const [error, setError] = useState("");
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const verifyAuth = async () => {
+      const authStatus = await checkAuth();
+      if (authStatus) {
+        navigate("/user-dashboard");
+      }
+    };
+    
+    verifyAuth();
+  }, []);
 
   const login = async () => {
     setLoading(true);
