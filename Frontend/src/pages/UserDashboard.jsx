@@ -1,12 +1,25 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { User, Calendar, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import { checkAuth } from "../lib";
+
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'Completed':
+      return 'bg-green-100 text-green-800';
+    case 'In progress':
+      return 'bg-yellow-100 text-yellow-800';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
 
 export default function UserDashboard() {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
     const verifyAuth = async () => {
@@ -19,35 +32,51 @@ export default function UserDashboard() {
     verifyAuth();
   }, [navigate]);
 
-  const tasks = [
-    {
-      id: 1,
-      task: "Design landing page",
-      project: "Website redesign",
-      dueDate: "Jul 12, 2024",
-      status: "In progress",
-      statusColor: "bg-yellow-100 text-yellow-800",
-      requestTeamMember: "Request",
-    },
-    {
-      id: 2,
-      task: "Develop user onboarding flow",
-      project: "Mobile app development",
-      dueDate: "Jul 15, 2024",
-      status: "To do",
-      statusColor: "bg-gray-100 text-gray-800",
-      requestTeamMember: "Request",
-    },
-    {
-      id: 3,
-      task: "Create marketing campaign",
-      project: "Product launch",
-      dueDate: "Jul 20, 2024",
-      status: "Completed",
-      statusColor: "bg-green-100 text-green-800",
-      requestTeamMember: "Request",
-    },
-  ];
+  useEffect(() => {
+    const fetchUserAndTasks = async () => {
+      try {
+        // Fetch user profile
+        const userRes = await fetch('/api/user/profile', {
+          credentials: 'include'
+        });
+        
+        if (!userRes.ok) throw new Error('Failed to fetch user profile');
+        const userData = await userRes.json();
+        setUser(userData);
+
+        // Fetch tasks
+        const tasksRes = await fetch('/api/user/tasks', {
+          credentials: 'include'
+        });
+        
+        if (!tasksRes.ok) throw new Error('Failed to fetch tasks');
+        const tasksData = await tasksRes.json();
+        
+        // Transform tasks data
+        const formattedTasks = tasksData.map(task => ({
+          id: task._id,
+          task: task.task,
+          project: task.project,
+          dueDate: new Date(task.dueDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
+          }),
+          status: task.status,
+          statusColor: getStatusColor(task.status),
+          requestTeamMember: "Request"
+        }));
+        
+        setTasks(formattedTasks);
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserAndTasks();
+  }, []);
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -75,11 +104,14 @@ export default function UserDashboard() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome back, Alex
+            Welcome back, {user ? `${user.firstName}` : 'User'}
           </h2>
           <p className="text-gray-600">
             Here's what you need to work on today.
           </p>
+          {loading && (
+            <div className="text-gray-500">Loading your tasks...</div>
+          )}
         </div>
 
         {/* Tasks Section */}
