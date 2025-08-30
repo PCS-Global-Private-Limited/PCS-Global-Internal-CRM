@@ -36,9 +36,14 @@ export default function UserDashboard() {
     const fetchUserAndTasks = async () => {
       try {
         // Fetch user profile
-        const userRes = await fetch('/api/user/profile', {
-          credentials: 'include'
-        });
+        const userRes = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
         
         if (!userRes.ok) throw new Error('Failed to fetch user profile');
         const userData = await userRes.json();

@@ -1,21 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { User, Camera, Plus, LogOut, Mail, Phone, Building, BookOpen, X } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import {
+  User,
+  Camera,
+  Plus,
+  LogOut,
+  Mail,
+  Phone,
+  Building,
+  BookOpen,
+  X,
+} from "lucide-react";
 import Navbar from "../components/Navbar";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 export default function UserProfile() {
   const navigate = useNavigate();
   const [user, setUser] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    branch: '',
-    designation: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    branch: "",
+    designation: "",
     skills: [],
-    avatar: null
+    avatar: null,
   });
-  const [newSkill, setNewSkill] = useState('');
+  const [newSkill, setNewSkill] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -24,20 +34,23 @@ export default function UserProfile() {
 
   const fetchUserProfile = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/user/profile`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
         }
-      });
+      );
 
       if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch profile');
+          throw new Error(errorData.message || "Failed to fetch profile");
         } else {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -45,14 +58,14 @@ export default function UserProfile() {
 
       const data = await response.json();
       if (!data) {
-        throw new Error('No data received');
+        throw new Error("No data received");
       }
 
       setUser(data);
     } catch (error) {
-      console.error('Error fetching profile:', error);
-      if (error.message.includes('401') || error.message.includes('403')) {
-        navigate('/login');
+      console.error("Error fetching profile:", error);
+      if (error.message.includes("401") || error.message.includes("403")) {
+        navigate("/login");
       }
     }
   };
@@ -61,9 +74,9 @@ export default function UserProfile() {
     if (!file) return;
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
     if (!allowedTypes.includes(file.type)) {
-      alert('Please select a valid image file (JPEG, PNG, or GIF)');
+      alert("Please select a valid image file (JPEG, PNG, or GIF)");
       return;
     }
 
@@ -77,7 +90,7 @@ export default function UserProfile() {
             const img = new Image();
             img.src = e.target.result;
             img.onload = () => {
-              const canvas = document.createElement('canvas');
+              const canvas = document.createElement("canvas");
               let width = img.width;
               let height = img.height;
 
@@ -96,7 +109,7 @@ export default function UserProfile() {
 
               canvas.width = width;
               canvas.height = height;
-              const ctx = canvas.getContext('2d');
+              const ctx = canvas.getContext("2d");
               ctx.drawImage(img, 0, 0, width, height);
 
               // Get compressed image
@@ -107,33 +120,36 @@ export default function UserProfile() {
         });
       };
 
-      console.log('Compressing image...');
+      console.log("Compressing image...");
       const compressedImage = await compressImage(file);
 
-      console.log('Sending to server...');
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile/avatar`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({ 
-          image: compressedImage 
-        })
-      });
+      console.log("Sending to server...");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/user/profile/avatar`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            image: compressedImage,
+          }),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || data.message || 'Failed to upload image');
+        throw new Error(data.error || data.message || "Failed to upload image");
       }
 
-      setUser(prev => ({ ...prev, avatar: data.avatarUrl }));
-      alert('Image uploaded successfully!');
+      setUser((prev) => ({ ...prev, avatar: data.avatarUrl }));
+      alert("Image uploaded successfully!");
     } catch (error) {
-      console.error('Error uploading image:', error);
-      alert(error.message || 'Failed to upload image. Please try again.');
+      console.error("Error uploading image:", error);
+      alert(error.message || "Failed to upload image. Please try again.");
     }
   };
 
@@ -141,69 +157,82 @@ export default function UserProfile() {
     if (!newSkill.trim()) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile/skills`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ skill: newSkill.trim() })
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/user/profile/skills`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ skill: newSkill.trim() }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
-        setUser(prev => ({
+        setUser((prev) => ({
           ...prev,
-          skills: data.skills
+          skills: data.skills,
         }));
-        setNewSkill('');
+        setNewSkill("");
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add skill');
+        throw new Error(errorData.message || "Failed to add skill");
       }
     } catch (error) {
-      console.error('Error adding skill:', error);
+      console.error("Error adding skill:", error);
     }
   };
 
   const handleRemoveSkill = async (skillToRemove) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile/skills`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ skill: skillToRemove })
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/user/profile/skills`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ skill: skillToRemove }),
+        }
+      );
 
       if (response.ok) {
         const data = await response.json();
-        setUser(prev => ({
+        setUser((prev) => ({
           ...prev,
-          skills: data.skills
+          skills: data.skills,
         }));
       } else {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to remove skill');
+        throw new Error(errorData.message || "Failed to remove skill");
       }
     } catch (error) {
-      console.error('Error removing skill:', error);
+      console.error("Error removing skill:", error);
     }
   };
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include'
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
-        navigate('/login');
+        navigate("/login");
       }
     } catch (error) {
-      console.error('Error logging out:', error);
+      console.error("Error logging out:", error);
     }
   };
 
