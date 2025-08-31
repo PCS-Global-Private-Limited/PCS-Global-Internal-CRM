@@ -2,7 +2,7 @@ import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-const signupUser = async (req, res) => {
+export const signupUser = async (req, res) => {
   try {
     const {
       branch,
@@ -42,7 +42,7 @@ const signupUser = async (req, res) => {
       });
     }
 
-    // Check if user already exists with the same email or employee ID
+    // Check if user already exists
     const existingUser = await User.findOne({
       $or: [{ email }, { employeeId }, { phone }],
     });
@@ -50,8 +50,7 @@ const signupUser = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message:
-          "User already exists with the provided email, employee ID, or phone number",
+        message: "User already exists with the provided email, employee ID, or phone number",
       });
     }
 
@@ -69,12 +68,26 @@ const signupUser = async (req, res) => {
       lastName,
       password: hashedPassword,
       phone,
+      lastActive: new Date() // Add last active timestamp
     });
 
-    // Save user to database
     await newUser.save();
 
-    // Send success response
+    // Create and send token
+    const token = jwt.sign(
+      { userId: newUser._id },
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: "7d" }
+    );
+
+    // Set cookie
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
     res.status(201).json({
       success: true,
       message: "User created successfully",
@@ -98,7 +111,7 @@ const signupUser = async (req, res) => {
   }
 };
 
-const loginUser = async (req, res) => {
+export const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -116,19 +129,21 @@ const loginUser = async (req, res) => {
         .json({ success: false, message: "Invalid credentials" });
     }
 
+    // Update last active timestamp
+    user.lastActive = new Date();
+    await user.save();
+
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET || "secret",
-      {
-        expiresIn: "7d",
-      }
+      { expiresIn: "7d" }
     );
 
     res.cookie("token", token, {
-      httpOnly: true, // cannot be accessed by JS
-      secure: process.env.NODE_ENV === "production", // only https in prod
-      sameSite: "strict", // CSRF protection
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
     res.json({
@@ -137,7 +152,7 @@ const loginUser = async (req, res) => {
       user: {
         id: user._id,
         email: user.email,
-        name: user.firstName + " " + user.lastName, // example
+        name: user.firstName + " " + user.lastName,
       },
     });
   } catch (err) {
@@ -146,7 +161,15 @@ const loginUser = async (req, res) => {
   }
 };
 
-const verifyUser = (req, res) => {
+export const logoutUser = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    res.json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error logging out" });
+  }
+};
+export const verifyUser = (req, res) => {
   const token = req.cookies.token;
   if (!token)
     return res
@@ -162,5 +185,3 @@ const verifyUser = (req, res) => {
       .json({ success: false, message: "Invalid or expired token" });
   }
 };
-
-export { signupUser, loginUser, verifyUser };
