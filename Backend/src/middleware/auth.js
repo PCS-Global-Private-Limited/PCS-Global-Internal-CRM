@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import User from '../models/user.model.js';
 
 export const authenticateToken = async (req, res, next) => {
   try {
@@ -29,6 +29,7 @@ export const authenticateToken = async (req, res, next) => {
     req.user = {
       userId: user._id,
       email: user.email,
+      role: user.role,
       firstName: user.firstName,
       lastName: user.lastName
     };

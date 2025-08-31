@@ -22,17 +22,18 @@ const SignupPage = () => {
     try {
       setLoading(true);
       setAddError("");
-      
+
       const res = await fetch(`${apiUrl}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        credentials: "include",
       });
 
       console.log("Response Status:", res.status);
-      
+
       const responseData = await res.json();
-      
+
       if (!res.ok) {
         const err = await res.json();
         if (res.status === 409 && err.exists) {
@@ -53,7 +54,7 @@ const SignupPage = () => {
       reset();
       // You can add navigation here if needed
       // navigate('/login');
-      
+
     } catch (error) {
       console.error("Error signing up:", error);
       setAddError("An error occurred while signing up");
@@ -169,6 +170,26 @@ const SignupPage = () => {
                 rules={{ required: "Designation is required" }}
               />
 
+              {/* Role */}
+              <div className="w-full">
+                <label className="flex flex-col w-full">
+                  <p className="pb-2 font-medium">Branch</p>
+                  <select
+                    {...register("role", { required: "Role is required" })}
+                    className="rounded-lg bg-[#e7edf4] h-14 p-4 text-base focus:outline-none w-full"
+                  >
+                    <option value="">Select your role</option>
+                    <option value="Manager">Manager</option>
+                    <option value="Employee">Employee</option>
+                  </select>
+                  {errors.role && (
+                    <span className="text-red-500 text-sm mt-1">
+                      {errors.role.message}
+                    </span>
+                  )}
+                </label>
+              </div>
+
               {/* Password */}
               <InputField
                 label="Password"
@@ -204,9 +225,8 @@ const SignupPage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full h-10 flex items-center justify-center rounded-lg ${
-                    loading ? 'bg-[#93c2f7] cursor-not-allowed' : 'bg-[#0d80f2] hover:bg-[#0b6acc]'
-                  } text-slate-50 text-sm font-bold transition-colors`}
+                  className={`w-full h-10 flex items-center justify-center rounded-lg ${loading ? 'bg-[#93c2f7] cursor-not-allowed' : 'bg-[#0d80f2] hover:bg-[#0b6acc]'
+                    } text-slate-50 text-sm font-bold transition-colors`}
                 >
                   {loading ? 'Signing up...' : 'Sign Up'}
                 </button>

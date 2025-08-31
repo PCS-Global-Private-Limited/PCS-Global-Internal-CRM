@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { 
+import {
   ChevronDown,
   Upload,
   Calendar,
@@ -7,6 +7,7 @@ import {
   FileText,
   Plus
 } from 'lucide-react';
+import { fileToBase64 } from "../utils/fileToBase64";
 
 
 // Create Task Component
@@ -43,9 +44,99 @@ const CreateTask = () => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    console.log('Task created:', { ...formData, documents: uploadedFiles });
-    alert('Task created successfully!');
+  // const handleSubmit = () => {
+  //   console.log('Task created:', { ...formData, documents: uploadedFiles });
+  //   alert('Task created successfully!');
+  // };
+
+  const handleSubmit = async () => {
+    try {
+      // Step 1: Convert all uploaded files to base64
+      let uploadedDocs = [];
+      if (uploadedFiles.length > 0) {
+        const filePromises = uploadedFiles.map(async (file) => {
+          const base64File = await fileToBase64(file);
+          return { file: base64File, fileName: file.name };
+        });
+
+        uploadedDocs = await Promise.all(filePromises);
+      }
+
+      // Step 2: Send documents to backend for Cloudinary upload
+      let documentUrls = [];
+      if (uploadedDocs.length > 0) {
+        const response = await fetch(
+          `${import.meta.env.VITE_API_URL}/api/task/upload-documents`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+            },
+            body: JSON.stringify({ documents: uploadedDocs }),
+          }
+        );
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || data.message || "Document upload failed");
+        }
+
+        documentUrls = data.documentUrls; // Array of uploaded Cloudinary URLs
+        console.log("Document URLs:", documentUrls);
+      }
+
+      console.log("Document URLs:", documentUrls);
+      
+
+      //  assignees: [formData.assignee], // Single assignee for now
+
+      // Step 3: Create Task API call
+      const createTaskResponse = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/task/create`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            title: formData.title,
+            description: formData.description,
+            deadline: formData.deadline,
+            documentUrls,
+          }),
+        }
+      );
+
+      const createTaskData = await createTaskResponse.json();
+      if (!createTaskResponse.ok) {
+        throw new Error(
+          createTaskData.error ||
+          createTaskData.message ||
+          "Failed to create task"
+        );
+      }
+
+      alert("Task created successfully!");
+      console.log("Created Task:", createTaskData.task);
+
+      // Reset form
+      setFormData({
+        title: "",
+        description: "",
+        assignee: "",
+        deadline: "",
+        documents: [],
+      });
+      setUploadedFiles([]);
+
+    } catch (error) {
+      console.error("Error creating task:", error);
+      alert(error.message || "Something went wrong!");
+    }
   };
 
   const selectedEmployee = employees.find(emp => emp.id.toString() === formData.assignee);
@@ -94,7 +185,7 @@ const CreateTask = () => {
             </div>
 
             {/* Assignee */}
-            <div className="relative">
+            {/* <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Assignee
               </label>
@@ -136,7 +227,7 @@ const CreateTask = () => {
                   ))}
                 </div>
               )}
-            </div>
+            </div> */}
 
             {/* Deadline */}
             <div>
@@ -159,7 +250,7 @@ const CreateTask = () => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Documents
               </label>
-              
+
               {/* Upload Area */}
               <div className="border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors">
                 <input

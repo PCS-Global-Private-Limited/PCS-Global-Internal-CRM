@@ -5,12 +5,11 @@ const checkAuth = async () => {
   });
 
   if (res.ok) {
-    console.log("Ok");
-    
-    return true;
+    const userDetails = await res.json();
+    console.log("User details from auth check:", userDetails);
+    return userDetails;
   } else {
     console.log("Not ok");
-    
     return false;
   }
 };

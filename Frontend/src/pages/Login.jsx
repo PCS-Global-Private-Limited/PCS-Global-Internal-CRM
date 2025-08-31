@@ -15,11 +15,15 @@ const Login = () => {
   useEffect(() => {
     const verifyAuth = async () => {
       const authStatus = await checkAuth();
-      if (authStatus) {
+      console.log("Auth status on login page:", authStatus);
+      if (authStatus.role === "Manager") {
+        navigate("/manager-dashboard");
+      }
+      else if (authStatus.role === "Employee") {
         navigate("/user-dashboard");
       }
     };
-    
+
     verifyAuth();
   }, []);
 

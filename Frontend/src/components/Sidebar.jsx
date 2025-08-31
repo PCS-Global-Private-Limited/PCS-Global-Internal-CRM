@@ -37,9 +37,8 @@ const Sidebar = ({ activeItem, onItemClick }) => {
                     const Icon = item.icon;
                     const isActive = activeItem === item.id;
                     return (
-                        <Link to={item.route} >
+                        <Link key={item.id} to={item.route} >
                             <div
-                                key={item.id}
                                 onClick={() => onItemClick(item.id)}
                                 className={`flex items-center px-6 py-3 text-sm font-medium cursor-pointer transition-all duration-200 ${isActive
                                     ? 'bg-blue-50 text-blue-600 border-r-3 border-blue-600 shadow-sm'

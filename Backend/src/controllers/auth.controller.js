@@ -1,4 +1,4 @@
-import User from "../models/User.js";
+import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -14,6 +14,7 @@ export const signupUser = async (req, res) => {
       lastName,
       password,
       phone,
+      role,
     } = req.body;
 
     // Validate if all required fields are present
@@ -26,7 +27,8 @@ export const signupUser = async (req, res) => {
       !lastName ||
       !password ||
       !confirmPassword ||
-      !phone
+      !phone ||
+      !role
     ) {
       return res.status(400).json({
         success: false,
@@ -50,7 +52,8 @@ export const signupUser = async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: "User already exists with the provided email, employee ID, or phone number",
+        message:
+          "User already exists with the provided email, employee ID, or phone number",
       });
     }
 
@@ -68,14 +71,17 @@ export const signupUser = async (req, res) => {
       lastName,
       password: hashedPassword,
       phone,
-      lastActive: new Date() // Add last active timestamp
+      role,
+      lastActive: new Date(), // Add last active timestamp
     });
+
+    console.log("newUser:", newUser);
 
     await newUser.save();
 
     // Create and send token
     const token = jwt.sign(
-      { userId: newUser._id },
+      { userId: newUser._id, role: newUser.role },
       process.env.JWT_SECRET || "secret",
       { expiresIn: "7d" }
     );
@@ -85,7 +91,7 @@ export const signupUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.status(201).json({
@@ -99,6 +105,8 @@ export const signupUser = async (req, res) => {
         branch: newUser.branch,
         designation: newUser.designation,
         phone: newUser.phone,
+        role: newUser.role,
+        id: newUser._id,
       },
     });
   } catch (error) {
@@ -134,7 +142,7 @@ export const loginUser = async (req, res) => {
     await user.save();
 
     const token = jwt.sign(
-      { userId: user._id },
+      { userId: user._id, role: user.role },
       process.env.JWT_SECRET || "secret",
       { expiresIn: "7d" }
     );
@@ -143,7 +151,7 @@ export const loginUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     res.json({
@@ -153,6 +161,7 @@ export const loginUser = async (req, res) => {
         id: user._id,
         email: user.email,
         name: user.firstName + " " + user.lastName,
+        role: user.role,
       },
     });
   } catch (err) {
@@ -178,7 +187,9 @@ export const verifyUser = (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
-    res.json({ success: true, userId: decoded.userId });
+    console.log("decoded:", decoded);
+
+    res.json({ success: true, userId: decoded.userId, role: decoded.role });
   } catch (err) {
     res
       .status(401)

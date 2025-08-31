@@ -20,31 +20,34 @@ export default function UserDashboard() {
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
+  const verifyAuth = async () => {
+    const authStatus = await checkAuth();
+    if (authStatus.role === "Manager") {
+      navigate("/manager-dashboard");
+    }
+    else {
+      navigate("/user-dashboard");
+    }
+  };
+
   useEffect(() => {
-    const verifyAuth = async () => {
-      const authStatus = await checkAuth();
-      if (!authStatus) {
-        navigate("/login");
-      }
-    };
-    
     verifyAuth();
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     const fetchUserAndTasks = async () => {
       try {
         // Fetch user profile
         const userRes = await fetch(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
-        
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+
         if (!userRes.ok) throw new Error('Failed to fetch user profile');
         const userData = await userRes.json();
         setUser(userData);
@@ -53,10 +56,10 @@ export default function UserDashboard() {
         const tasksRes = await fetch('/api/user/tasks', {
           credentials: 'include'
         });
-        
+
         if (!tasksRes.ok) throw new Error('Failed to fetch tasks');
         const tasksData = await tasksRes.json();
-        
+
         // Transform tasks data
         const formattedTasks = tasksData.map(task => ({
           id: task._id,
@@ -71,7 +74,7 @@ export default function UserDashboard() {
           statusColor: getStatusColor(task.status),
           requestTeamMember: "Request"
         }));
-        
+
         setTasks(formattedTasks);
       } catch (error) {
         console.error('Error:', error);
