@@ -9,7 +9,8 @@ import {
     User,
     Search,
     Plus,
-    UserCheck
+    UserCheck,
+    CalendarCheck 
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -18,7 +19,8 @@ const Sidebar = ({ activeItem, onItemClick }) => {
         { icon: Home, label: 'Dashboard', id: 'dashboard', route: '/manager-dashboard' },
         { icon: CheckSquare, label: 'Tasks', id: 'tasks', route: '/task' },
         { icon: FileText, label: 'Requests', id: 'requests', route: '/employee-addition-requests' },
-        { icon: Users, label: 'Attendance', id: 'attendance', route: '/attendance' },
+        { icon: CalendarCheck , label: 'Attendance', id: 'attendance', route: '/attendance' },
+        { icon: Users, label: 'Employees', id: 'employees', route: '/employees' },
         { icon: BarChart3, label: 'Reports', id: 'reports', route: '/reports' }
     ];
 

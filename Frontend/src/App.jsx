@@ -14,6 +14,9 @@ import Task from "./pages/Task";
 import Attendance from "./pages/Attendance";
 import EmployeeAdditionRequests from "./pages/EmployeeAdditionRequests";
 import ReportsDashboard from "./pages/ReportsDashboard ";
+import Employees from "./pages/Employees.jsx"
+import EmployeeDetails from "./pages/EmployeeDetails.jsx"
+import AddEmployeeRequest from "./pages/AddEmployeeRequest.jsx"
 
 const router = createBrowserRouter([
   {
@@ -71,6 +74,18 @@ const router = createBrowserRouter([
   {
     path: "/reports",
     element: <ReportsDashboard />,
+  },
+  {
+    path: "/employees",
+    element: <Employees />,
+  },
+  {
+    path: "/employee-details",
+    element: <EmployeeDetails />,
+  },
+  {
+    path: "/employee-addition-requests/add-employee",
+    element: <AddEmployeeRequest />,
   },
 ]);
 
