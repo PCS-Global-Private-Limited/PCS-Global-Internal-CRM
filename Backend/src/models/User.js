@@ -45,6 +45,20 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
     },
+    avatar: {
+      type: String,
+      default: null,
+    },
+    skills: [
+      {
+        type: String,
+        trim: true,
+      },
+    ],
+    lastActive: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
