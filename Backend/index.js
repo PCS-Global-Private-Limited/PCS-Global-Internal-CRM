@@ -42,7 +42,7 @@ app.use(cors({
 // Routes
 app.use("/api", userRouter);
 app.use('/api/user', profileRouter);
-app.use('/api/user', taskRouter);
+// app.use('/api/user', taskRouter);
 app.use("/api/task", taskRouter);
 app.use(cookieParser());
 

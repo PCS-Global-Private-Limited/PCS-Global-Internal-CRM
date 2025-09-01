@@ -1,5 +1,6 @@
 import Task from "../models/task.model.js";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 // ✅ Helper function to update overall status automatically
 const updateOverallStatus = async (task) => {
@@ -59,6 +60,214 @@ export const getAllTasks = async (req, res) => {
     res.status(200).json({ success: true, tasks });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getMyTasks = async (req, res) => {
+  try {
+    // Extract user ID from JWT token
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Not authenticated"
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
+    const userId = decoded.userId;
+
+    // Find tasks where the authenticated user is assigned
+    const tasks = await Task.find({
+      "assignees.userId": userId
+    })
+    .populate("createdBy", "firstName lastName email")
+    .populate("assignees.userId", "firstName lastName email")
+    .sort({ createdAt: -1 });
+
+    // Format response similar to the above function
+    const myTasks = tasks.map(task => {
+      const myAssignee = task.assignees.find(
+        assignee => assignee.userId._id.toString() === userId
+      );
+
+      return {
+        _id: task._id,
+        title: task.title,
+        description: task.description,
+        deadline: task.deadline,
+        documentUrls: task.documentUrls,
+        createdBy: task.createdBy,
+        overallStatus: task.overallStatus,
+        createdAt: task.createdAt,
+        updatedAt: task.updatedAt,
+        myStatus: myAssignee ? myAssignee.status : "not assigned",
+        allAssignees: task.assignees
+      };
+    });
+
+    const tasksByStatus = {
+      "not started": myTasks.filter(task => task.myStatus === "not started"),
+      "in progress": myTasks.filter(task => task.myStatus === "in progress"),
+      "completed": myTasks.filter(task => task.myStatus === "completed")
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "My tasks retrieved successfully",
+      totalTasks: myTasks.length,
+      tasks: myTasks,
+      tasksByStatus,
+      summary: {
+        notStarted: tasksByStatus["not started"].length,
+        inProgress: tasksByStatus["in progress"].length,
+        completed: tasksByStatus["completed"].length
+      }
+    });
+
+  } catch (error) {
+    console.error("Error fetching my tasks:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+export const getProjectDetails = async (req, res) => {
+  try {
+    const { projectId } = req.params;
+    
+    // Validate projectId
+    if (!projectId) {
+      return res.status(400).json({
+        success: false,
+        message: "Project ID is required"
+      });
+    }
+
+    // Validate if projectId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid project ID format"
+      });
+    }
+
+    // Find the project/task by ID and populate related fields
+    const project = await Task.findById(projectId)
+      .populate("createdBy", "firstName lastName email role")
+      .populate("assignees.userId", "firstName lastName email role")
+      .lean(); // Use lean() for better performance when we don't need mongoose document methods
+
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found"
+      });
+    }
+
+    // Calculate project statistics
+    const totalAssignees = project.assignees.length;
+    const completedAssignees = project.assignees.filter(a => a.status === "completed").length;
+    const inProgressAssignees = project.assignees.filter(a => a.status === "in progress").length;
+    const notStartedAssignees = project.assignees.filter(a => a.status === "not started").length;
+
+    // Calculate completion percentage
+    const completionPercentage = totalAssignees > 0 ? 
+      Math.round((completedAssignees / totalAssignees) * 100) : 0;
+
+    // Check if project is overdue
+    const currentDate = new Date();
+    const deadline = new Date(project.deadline);
+    const isOverdue = currentDate > deadline && project.overallStatus !== "completed";
+    
+    // Calculate days until deadline (negative if overdue)
+    const daysUntilDeadline = Math.ceil((deadline - currentDate) / (1000 * 60 * 60 * 24));
+
+    // Format assignees with additional details
+    const formattedAssignees = project.assignees.map(assignee => ({
+      _id: assignee.userId._id,
+      firstName: assignee.userId.firstName,
+      lastName: assignee.userId.lastName,
+      email: assignee.userId.email,
+      role: assignee.userId.role,
+      status: assignee.status,
+      fullName: `${assignee.userId.firstName} ${assignee.userId.lastName}`
+    }));
+
+    // Prepare detailed project response
+    const projectDetails = {
+      _id: project._id,
+      title: project.title,
+      description: project.description,
+      deadline: project.deadline,
+      documentUrls: project.documentUrls,
+      overallStatus: project.overallStatus,
+      createdAt: project.createdAt,
+      updatedAt: project.updatedAt,
+      
+      // Creator details
+      createdBy: {
+        _id: project.createdBy._id,
+        firstName: project.createdBy.firstName,
+        lastName: project.createdBy.lastName,
+        email: project.createdBy.email,
+        role: project.createdBy.role,
+        fullName: `${project.createdBy.firstName} ${project.createdBy.lastName}`
+      },
+      
+      // Assignees details
+      assignees: formattedAssignees,
+      
+      // Project statistics
+      statistics: {
+        totalAssignees,
+        completedAssignees,
+        inProgressAssignees,
+        notStartedAssignees,
+        completionPercentage
+      },
+      
+      // Timeline information
+      timeline: {
+        isOverdue,
+        daysUntilDeadline,
+        deadlineStatus: isOverdue ? "overdue" : 
+                       daysUntilDeadline <= 3 ? "urgent" : 
+                       daysUntilDeadline <= 7 ? "soon" : "normal"
+      },
+      
+      // Document information
+      documents: {
+        count: project.documentUrls ? project.documentUrls.length : 0,
+        urls: project.documentUrls || []
+      }
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "Project details retrieved successfully",
+      project: projectDetails
+    });
+
+  } catch (error) {
+    console.error("Error fetching project details:", error);
+    
+    // Handle specific MongoDB errors
+    if (error.name === 'CastError') {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid project ID format"
+      });
+    }
+    
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
   }
 };
 

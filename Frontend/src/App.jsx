@@ -15,9 +15,9 @@ import Attendance from "./pages/Attendance";
 import UserProfile from "./pages/UserProfile";
 import EmployeeAdditionRequests from "./pages/EmployeeAdditionRequests";
 import ReportsDashboard from "./pages/ReportsDashboard ";
-import Employees from "./pages/Employees.jsx"
-import EmployeeDetails from "./pages/EmployeeDetails.jsx"
-import AddEmployeeRequest from "./pages/AddEmployeeRequest.jsx"
+import Employees from "./pages/Employees.jsx";
+import EmployeeDetails from "./pages/EmployeeDetails.jsx";
+import AddEmployeeRequest from "./pages/AddEmployeeRequest.jsx";
 
 const router = createBrowserRouter([
   {
@@ -47,14 +47,10 @@ const router = createBrowserRouter([
   {
     path: "/user-dashboard/request-team-member",
     element: <RequestTeamMember />,
-    path: "/user-dashboard/request-team-member",
-    element: <RequestTeamMember />
   },
   {
-    path: "/user-dashboard/project-details",
+    path: "/user-dashboard/project-details/:id",
     element: <ProjectDetails />,
-    path: "/user-dashboard/project-details",
-    element: <ProjectDetails />
   },
   {
     path: "/manager-dashboard",
