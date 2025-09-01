@@ -56,6 +56,7 @@ export const createTask = async (req, res) => {
 export const getAllTasks = async (req, res) => {
   try {
     const tasks = await Task.find();
+    console.log("Fetched tasks:", tasks);
     res.status(200).json({ success: true, tasks });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -64,10 +65,13 @@ export const getAllTasks = async (req, res) => {
 
 export const assignEmployeesToTask = async (req, res) => {
   try {
-    const { taskId, employeeIds } = req.body;
+    const { taskId, employees } = req.body;
+
+    console.log("Assigning employees:", employees, "to task:", taskId);
+    
 
     // Validate inputs
-    if (!taskId || !employeeIds || !Array.isArray(employeeIds)) {
+    if (!taskId || !employees || !Array.isArray(employees)) {
       return res.status(400).json({
         success: false,
         message: "Task ID and employee IDs are required",
@@ -80,8 +84,9 @@ export const assignEmployeesToTask = async (req, res) => {
     }
 
     // Convert employeeIds into the format required for assignees
-    const newAssignees = employeeIds.map((id) => ({
-      userId: id,
+    const newAssignees = employees.map((e) => ({
+      name: e.name,
+      userId: e.id,
       status: "not started",
     }));
 
