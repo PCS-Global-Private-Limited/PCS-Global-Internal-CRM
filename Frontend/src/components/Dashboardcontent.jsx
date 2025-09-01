@@ -1,5 +1,204 @@
+// import React, { useState } from 'react';
+// import {
+//     Home,
+//     CheckSquare,
+//     FileText,
+//     Users,
+//     BarChart3,
+//     User,
+//     Search,
+//     Plus,
+//     UserCheck
+// } from 'lucide-react';
 
-import React, { useState } from 'react';
+// import { Link } from 'react-router-dom';
+
+// const DashboardContent = () => {
+//     const [searchTerm, setSearchTerm] = useState('');
+
+//     const employeeData = [
+//         { name: 'Lucas Bennett', time: '6h 30m', status: 'active', avatar: 'LB' },
+//         { name: 'Olivia Carter', time: '7h 15m', status: 'active', avatar: 'OC' },
+//         { name: 'Owen Hughes', time: '5h 45m', status: 'active', avatar: 'OH' },
+//         { name: 'Sophia Powell', time: '8h 00m', status: 'break', avatar: 'SP' },
+//         { name: 'Leo Morgan', time: '0h 00m', status: 'offline', avatar: 'LM' }
+//     ];
+
+//     const overviewCards = [
+//         {
+//             title: 'Employees Logged In',
+//             value: '12',
+//             icon: Users,
+//             color: 'green',
+//             bgColor: 'bg-green-100',
+//             textColor: 'text-green-600'
+//         },
+//         {
+//             title: 'Requests to Approve',
+//             value: '3',
+//             icon: FileText,
+//             color: 'orange',
+//             bgColor: 'bg-orange-100',
+//             textColor: 'text-orange-600'
+//         },
+//         {
+//             title: 'Attendance',
+//             value: '95%',
+//             icon: BarChart3,
+//             color: 'blue',
+//             bgColor: 'bg-blue-100',
+//             textColor: 'text-blue-600'
+//         }
+//     ];
+
+//     const filteredEmployees = employeeData.filter(emp =>
+//         emp.name.toLowerCase().includes(searchTerm.toLowerCase())
+//     );
+
+//     const getStatusColor = (status) => {
+//         switch (status) {
+//             case 'active': return 'bg-green-500';
+//             case 'break': return 'bg-yellow-500';
+//             case 'offline': return 'bg-gray-400';
+//             default: return 'bg-gray-400';
+//         }
+//     };
+
+//     return (
+//         <div className="flex-1 overflow-auto bg-gray-50">
+//             {/* Header */}
+//             <div className="bg-white shadow-sm border-b border-gray-200 p-6">
+//                 <div className="flex items-center justify-between">
+//                     <div>
+//                         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+//                         <p className="text-sm text-gray-600 mt-1">Welcome back! Here's what's happening today.</p>
+//                     </div>
+//                     <div className="flex space-x-3">
+//                         <Link to="/create-task">
+//                             <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md">
+//                                 <Plus className="w-4 h-4 mr-2" />
+//                                 Create Task
+//                             </button>
+//                         </Link>
+//                         <Link to="/assign-task">
+//                             <button className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+//                                 <UserCheck className="w-4 h-4 mr-2" />
+//                                 Assign Task
+//                             </button>
+//                         </Link>
+//                     </div>
+//                 </div>
+//             </div>
+
+//             <div className="p-6">
+//                 {/* Overview Cards */}
+//                 <div className="mb-8">
+//                     <h2 className="text-lg font-semibold text-gray-900 mb-4">Overview</h2>
+//                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+//                         {overviewCards.map((card, index) => {
+//                             const Icon = card.icon;
+//                             return (
+//                                 <div key={index} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 hover:-translate-y-1">
+//                                     <div className="flex items-center justify-between">
+//                                         <div>
+//                                             <p className="text-sm font-medium text-gray-600">{card.title}</p>
+//                                             <p className="text-3xl font-bold text-gray-900 mt-2">{card.value}</p>
+//                                         </div>
+//                                         <div className={`w-12 h-12 ${card.bgColor} rounded-lg flex items-center justify-center`}>
+//                                             <Icon className={`w-6 h-6 ${card.textColor}`} />
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             );
+//                         })}
+//                     </div>
+//                 </div>
+
+//                 {/* Employee Time Section */}
+//                 <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+//                     <div className="p-6 border-b border-gray-200">
+//                         <div className="flex items-center justify-between mb-4">
+//                             <h2 className="text-lg font-semibold text-gray-900">Employee Time</h2>
+//                             <span className="text-sm text-gray-500">{filteredEmployees.length} employees</span>
+//                         </div>
+
+//                         {/* Search Bar */}
+//                         <div className="relative">
+//                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+//                             <input
+//                                 type="text"
+//                                 placeholder="Search for an employee"
+//                                 value={searchTerm}
+//                                 onChange={(e) => setSearchTerm(e.target.value)}
+//                                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all bg-gray-50 focus:bg-white"
+//                             />
+//                         </div>
+//                     </div>
+
+//                     {/* Employee List */}
+//                     <div className="p-6">
+//                         <div className="flex justify-between text-sm font-medium text-gray-500 mb-4 pb-2 border-b border-gray-200">
+//                             <span>Employee</span>
+//                             <span>Working Time</span>
+//                         </div>
+
+//                         <div className="space-y-3">
+//                             {filteredEmployees.map((employee, index) => (
+//                                 <div key={index} className="flex items-center justify-between py-4 px-4 rounded-lg hover:bg-gray-50 transition-all duration-200 border border-transparent hover:border-gray-200">
+//                                     <div className="flex items-center">
+//                                         <div className="relative">
+//                                             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium mr-4">
+//                                                 {employee.avatar}
+//                                             </div>
+//                                             <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(employee.status)}`}></div>
+//                                         </div>
+//                                         <div>
+//                                             <p className="font-medium text-gray-900">{employee.name}</p>
+//                                             <div className="flex items-center mt-1">
+//                                                 <span className="text-xs text-gray-500 capitalize">{employee.status}</span>
+//                                             </div>
+//                                         </div>
+//                                     </div>
+//                                     <div className="text-right">
+//                                         <span className={`font-semibold text-lg ${employee.time === '0h 00m' ? 'text-gray-400' : 'text-gray-700'
+//                                             }`}>
+//                                             {employee.time}
+//                                         </span>
+//                                         <div className="text-xs text-gray-500 mt-1">
+//                                             {employee.time === '0h 00m' ? 'Not started' : 'Active'}
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             ))}
+//                         </div>
+
+//                         {filteredEmployees.length === 0 && (
+//                             <div className="text-center py-12 text-gray-500">
+//                                 <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+//                                 <p className="text-lg font-medium mb-2">No employees found</p>
+//                                 <p className="text-sm">Try adjusting your search terms.</p>
+//                             </div>
+//                         )}
+//                     </div>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default DashboardContent;
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
 import {
     Home,
     CheckSquare,
@@ -9,26 +208,148 @@ import {
     User,
     Search,
     Plus,
-    UserCheck
+    UserCheck,
+    Calendar
 } from 'lucide-react';
 
-import { Link } from 'react-router-dom';
+
 
 const DashboardContent = () => {
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+    const [currentTime, setCurrentTime] = useState(new Date());
 
-    const employeeData = [
-        { name: 'Lucas Bennett', time: '6h 30m', status: 'active', avatar: 'LB' },
-        { name: 'Olivia Carter', time: '7h 15m', status: 'active', avatar: 'OC' },
-        { name: 'Owen Hughes', time: '5h 45m', status: 'active', avatar: 'OH' },
-        { name: 'Sophia Powell', time: '8h 00m', status: 'break', avatar: 'SP' },
-        { name: 'Leo Morgan', time: '0h 00m', status: 'offline', avatar: 'LM' }
+    // Sample employee data with login/logout times for different dates
+    const allEmployeeData = [
+        {
+            name: 'Lucas Bennett',
+            avatar: 'LB',
+            dates: {
+                '2025-05-10': { loginTime: '09:00', logoutTime: '17:30', status: 'logged_out' },
+                '2025-09-01': { loginTime: '08:30', logoutTime: null, status: 'active' }
+            }
+        },
+        {
+            name: 'Olivia Carter',
+            avatar: 'OC',
+            dates: {
+                '2025-05-10': { loginTime: '08:45', logoutTime: '18:00', status: 'logged_out' },
+                '2025-09-01': { loginTime: '09:15', logoutTime: null, status: 'active' }
+            }
+        },
+        {
+            name: 'Owen Hughes',
+            avatar: 'OH',
+            dates: {
+                '2025-05-10': { loginTime: '09:30', logoutTime: '17:00', status: 'logged_out' },
+                '2025-09-01': { loginTime: '08:45', logoutTime: null, status: 'break' }
+            }
+        },
+        {
+            name: 'Sophia Powell',
+            avatar: 'SP',
+            dates: {
+                '2025-05-10': { loginTime: '08:00', logoutTime: '16:30', status: 'logged_out' },
+                '2025-09-01': { loginTime: '09:00', logoutTime: '14:30', status: 'logged_out' }
+            }
+        },
+        {
+            name: 'Leo Morgan',
+            avatar: 'LM',
+            dates: {
+                '2025-05-10': { loginTime: null, logoutTime: null, status: 'offline' },
+                '2025-09-01': { loginTime: null, logoutTime: null, status: 'offline' }
+            }
+        },
+        {
+            name: 'Emma Wilson',
+            avatar: 'EW',
+            dates: {
+                '2025-05-10': { loginTime: '09:15', logoutTime: '18:15', status: 'logged_out' },
+                '2025-09-01': { loginTime: '08:00', logoutTime: null, status: 'active' }
+            }
+        }
     ];
+
+    // Update current time every minute for real-time calculations
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 60000); // Update every minute
+
+        return () => clearInterval(timer);
+    }, []);
+
+    // Calculate working time based on login/logout times
+    const calculateWorkingTime = (employee, date) => {
+        const dateData = employee.dates[date];
+        if (!dateData || !dateData.loginTime) {
+            return { hours: 0, minutes: 0, display: '0h 00m' };
+        }
+
+        const loginTime = new Date(`${date}T${dateData.loginTime}:00`);
+        let endTime;
+
+        if (dateData.logoutTime) {
+            // Employee has logged out - use logout time
+            endTime = new Date(`${date}T${dateData.logoutTime}:00`);
+        } else if (date === new Date().toISOString().split('T')[0]) {
+            // Today and still working - use current time
+            endTime = currentTime;
+        } else {
+            // Past date but no logout time recorded - assume 8 hours
+            endTime = new Date(loginTime.getTime() + 8 * 60 * 60 * 1000);
+        }
+
+        const diffMs = endTime - loginTime;
+        const hours = Math.floor(diffMs / (1000 * 60 * 60));
+        const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+        return {
+            hours,
+            minutes,
+            display: `${hours}h ${minutes.toString().padStart(2, '0')}m`
+        };
+    };
+
+    // Get employees for selected date
+    const getEmployeesForDate = () => {
+        return allEmployeeData
+            .map(emp => {
+                const dateData = emp.dates[selectedDate];
+                if (!dateData) return null;
+
+                const workingTime = calculateWorkingTime(emp, selectedDate);
+
+                return {
+                    ...emp,
+                    time: workingTime.display,
+                    status: dateData.status,
+                    loginTime: dateData.loginTime,
+                    logoutTime: dateData.logoutTime
+                };
+            })
+            .filter(emp => emp !== null);
+    };
+
+    const employeeData = getEmployeesForDate();
+
+    // Calculate overview statistics for selected date
+    const getOverviewStats = () => {
+        const employeesForDate = employeeData;
+        const loggedInCount = employeesForDate.filter(emp => emp.status === 'active' || emp.status === 'break').length;
+        const totalPresent = employeesForDate.filter(emp => emp.status !== 'offline').length;
+        const attendancePercentage = totalPresent > 0 ? Math.round((totalPresent / allEmployeeData.length) * 100) : 0;
+
+        return { loggedInCount, attendancePercentage };
+    };
+
+    const { loggedInCount, attendancePercentage } = getOverviewStats();
 
     const overviewCards = [
         {
-            title: 'Employees Logged In Today',
-            value: '12',
+            title: 'Employees Logged In',
+            value: loggedInCount.toString(),
             icon: Users,
             color: 'green',
             bgColor: 'bg-green-100',
@@ -44,7 +365,7 @@ const DashboardContent = () => {
         },
         {
             title: 'Attendance',
-            value: '95%',
+            value: `${attendancePercentage}%`,
             icon: BarChart3,
             color: 'blue',
             bgColor: 'bg-blue-100',
@@ -60,10 +381,23 @@ const DashboardContent = () => {
         switch (status) {
             case 'active': return 'bg-green-500';
             case 'break': return 'bg-yellow-500';
+            case 'logged_out': return 'bg-blue-500';
             case 'offline': return 'bg-gray-400';
             default: return 'bg-gray-400';
         }
     };
+
+    const getStatusText = (status) => {
+        switch (status) {
+            case 'active': return 'Active';
+            case 'break': return 'On Break';
+            case 'logged_out': return 'Logged Out';
+            case 'offline': return 'Offline';
+            default: return 'Unknown';
+        }
+    };
+
+    const isToday = selectedDate === new Date().toISOString().split('T')[0];
 
     return (
         <div className="flex-1 overflow-auto bg-gray-50">
@@ -72,26 +406,52 @@ const DashboardContent = () => {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                        <p className="text-sm text-gray-600 mt-1">Welcome back! Here's what's happening today.</p>
+                        <p className="text-sm text-gray-600 mt-1">
+                            {isToday ? "Welcome back! Here's what's happening today." : `Viewing data for ${new Date(selectedDate).toLocaleDateString()}`}
+                        </p>
                     </div>
                     <div className="flex space-x-3">
-                        <Link to="/create-task">
-                            <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md">
-                                <Plus className="w-4 h-4 mr-2" />
-                                Create Task
-                            </button>
-                        </Link>
-                        <Link to="/assign-task">
-                            <button className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
-                                <UserCheck className="w-4 h-4 mr-2" />
-                                Assign Task
-                            </button>
-                        </Link>
+                        <button className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm hover:shadow-md">
+                            <Plus className="w-4 h-4 mr-2" />
+                            Create Task
+                        </button>
+                        <button className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                            <UserCheck className="w-4 h-4 mr-2" />
+                            Assign Task
+                        </button>
                     </div>
                 </div>
             </div>
 
             <div className="p-6">
+                {/* Date Filter */}
+                <div className="mb-6">
+                    <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                        <div className="flex items-center space-x-4">
+                            <Calendar className="w-5 h-5 text-gray-500" />
+                            <div className="flex items-center space-x-2">
+                                <label htmlFor="date-select" className="text-sm font-medium text-gray-700">
+                                    Select Date:
+                                </label>
+                                <input
+                                    id="date-select"
+                                    type="date"
+                                    value={selectedDate}
+                                    onChange={(e) => setSelectedDate(e.target.value)}
+                                    max={new Date().toISOString().split('T')[0]}
+                                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                />
+                            </div>
+                            {isToday && (
+                                <div className="flex items-center space-x-2 text-sm text-green-600">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span>Live Data</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
                 {/* Overview Cards */}
                 <div className="mb-8">
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">Overview</h2>
@@ -156,17 +516,29 @@ const DashboardContent = () => {
                                         <div>
                                             <p className="font-medium text-gray-900">{employee.name}</p>
                                             <div className="flex items-center mt-1">
-                                                <span className="text-xs text-gray-500 capitalize">{employee.status}</span>
+                                                <span className="text-xs text-gray-500">{getStatusText(employee.status)}</span>
+                                                {employee.loginTime && (
+                                                    <span className="text-xs text-gray-400 ml-2">
+                                                        • In: {employee.loginTime}
+                                                        {employee.logoutTime && ` • Out: ${employee.logoutTime}`}
+                                                    </span>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <span className={`font-semibold text-lg ${employee.time === '0h 00m' ? 'text-gray-400' : 'text-gray-700'
+                                        <span className={`font-semibold text-lg ${employee.time === '0h 00m' ? 'text-gray-400' :
+                                                employee.status === 'active' && isToday ? 'text-green-600' : 'text-gray-700'
                                             }`}>
                                             {employee.time}
+                                            {employee.status === 'active' && isToday && (
+                                                <span className="ml-1 text-xs text-green-500">●</span>
+                                            )}
                                         </span>
                                         <div className="text-xs text-gray-500 mt-1">
-                                            {employee.time === '0h 00m' ? 'Not started' : 'Active'}
+                                            {employee.time === '0h 00m' ? 'Not logged in' :
+                                                employee.status === 'active' && isToday ? 'Currently working' :
+                                                    employee.status === 'break' && isToday ? 'On break' : 'Completed'}
                                         </div>
                                     </div>
                                 </div>
@@ -177,10 +549,49 @@ const DashboardContent = () => {
                             <div className="text-center py-12 text-gray-500">
                                 <Users className="w-16 h-16 mx-auto mb-4 text-gray-300" />
                                 <p className="text-lg font-medium mb-2">No employees found</p>
-                                <p className="text-sm">Try adjusting your search terms.</p>
+                                <p className="text-sm">
+                                    {employeeData.length === 0
+                                        ? 'No employee data available for this date.'
+                                        : 'Try adjusting your search terms.'}
+                                </p>
                             </div>
                         )}
                     </div>
+
+                    {/* Summary for selected date */}
+                    {employeeData.length > 0 && (
+                        <div className="px-6 pb-6">
+                            <div className="bg-gray-50 rounded-lg p-4">
+                                <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                                    Summary for {new Date(selectedDate).toLocaleDateString()}
+                                </h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                                    <div>
+                                        <span className="text-gray-500">Total Employees:</span>
+                                        <span className="font-medium ml-1">{employeeData.length}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500">Present:</span>
+                                        <span className="font-medium ml-1 text-green-600">
+                                            {employeeData.filter(emp => emp.status !== 'offline').length}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500">Active:</span>
+                                        <span className="font-medium ml-1 text-blue-600">
+                                            {employeeData.filter(emp => emp.status === 'active').length}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500">Logged Out:</span>
+                                        <span className="font-medium ml-1 text-gray-600">
+                                            {employeeData.filter(emp => emp.status === 'logged_out').length}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
