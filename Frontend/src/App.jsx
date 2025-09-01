@@ -45,7 +45,7 @@ const router = createBrowserRouter([
     element: <UserProfile />,
   },
   {
-    path: "/user-dashboard/request-team-member",
+    path: "/user-dashboard/request-team-member/:projectId/:projectTitle",
     element: <RequestTeamMember />,
   },
   {

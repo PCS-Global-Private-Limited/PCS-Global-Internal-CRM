@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useId } from "react";
 import { User, Calendar, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { Link, useNavigate } from "react-router-dom";
@@ -52,8 +52,6 @@ export default function UserDashboard() {
           }
         );
         const data = await response.json();
-
-        // if API returns { tasks: [...] }
         setTasks(Array.isArray(data.tasks) ? data.tasks : []);
 
         setLoading(false);
@@ -83,6 +81,10 @@ export default function UserDashboard() {
 
   const handleProjectDetails = (id) => {
     navigate(`/user-dashboard/project-details/${id}`);
+  };
+
+  const handleRequestTeamMenber = (id,title) => {
+    navigate(`/user-dashboard/request-team-member/${id}/${title}`);
   };
 
   return (
@@ -163,11 +165,12 @@ export default function UserDashboard() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <Link to="/user-dashboard/request-team-member">
-                          <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                            Request
-                          </button>
-                        </Link>
+                        <button
+                          onClick={() => handleRequestTeamMenber(task._id, task.title)}
+                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                        >
+                          Request
+                        </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
