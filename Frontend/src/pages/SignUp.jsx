@@ -173,7 +173,7 @@ const SignupPage = () => {
               {/* Role */}
               <div className="w-full">
                 <label className="flex flex-col w-full">
-                  <p className="pb-2 font-medium">Branch</p>
+                  <p className="pb-2 font-medium">Role</p>
                   <select
                     {...register("role", { required: "Role is required" })}
                     className="rounded-lg bg-[#e7edf4] h-14 p-4 text-base focus:outline-none w-full"

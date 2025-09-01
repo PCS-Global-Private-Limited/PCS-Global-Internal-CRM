@@ -1,5 +1,5 @@
 import express from "express";
-import { allEmployees } from "../controllers/user.controller.js";
+import { allEmployees, allUsers } from "../controllers/user.controller.js";
 import {
   signupUser,
   loginUser,
@@ -14,5 +14,6 @@ userRouter.post("/login", loginUser);
 userRouter.post("/logout", logoutUser);
 userRouter.get("/auth/verify", verifyUser);
 userRouter.get("/user/all-employees", allEmployees);
+userRouter.get("/user/all-users", allUsers);
 
 export default userRouter;

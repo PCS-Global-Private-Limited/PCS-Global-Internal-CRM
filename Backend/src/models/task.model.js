@@ -20,10 +20,13 @@ const taskSchema = new mongoose.Schema(
           ref: "User", // User model ka reference
           required: true,
         },
+        name: {
+          type: String,
+        },
         status: {
           type: String,
-          enum: ["not started", "in progress", "completed"],
-          default: "not started",
+          enum: ["todo", "in progress", "completed"],
+          default: "todo",
         },
       },
     ],
