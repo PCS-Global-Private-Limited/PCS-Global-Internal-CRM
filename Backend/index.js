@@ -6,6 +6,7 @@ import userRouter from "./src/routes/user.route.js";
 import profileRouter from "./src/routes/profile.route.js";
 import cookieParser from "cookie-parser";
 import taskRouter from "./src/routes/task.route.js";
+import attendenceRouter from "./src/routes/attendence.route.js";
 import requestTeamMemberRouter from "./src/routes/requestTeamMember.route.js";
 
 dotenv.config({ path: ".env" });
@@ -47,6 +48,7 @@ app.use("/api", userRouter);
 app.use("/api/user", profileRouter);
 // app.use('/api/user', taskRouter);
 app.use("/api/task", taskRouter);
+app.use("/api/attendance", attendenceRouter);
 app.use("/api", requestTeamMemberRouter);
 app.use(cookieParser());
 
