@@ -6,7 +6,7 @@ const checkAuth = async () => {
 
   if (res.ok) {
     const userDetails = await res.json();
-    console.log("User details from auth check:", userDetails);
+    // console.log("User details from auth check:", userDetails);
     return userDetails;
   } else {
     console.log("Not ok");
