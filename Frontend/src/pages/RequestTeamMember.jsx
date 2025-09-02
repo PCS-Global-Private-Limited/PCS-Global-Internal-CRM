@@ -106,15 +106,38 @@ export default function RequestTeamMember() {
     });
   };
 
+  const RequestTeamMember = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/request-team-member`,
+        {
+          method: "POST",
+          credentials: "include", // important for cookie-based auth
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            memberType: memberType,
+            projectTitle: projectTitle,
+            reason: reason,
+            selectedMembers: selectedMembers,
+            senderId: senderId,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      console.log("API response:", data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = () => {
-    // Handle form submission
-    console.log({
-      senderId,
-      projectTitle,
-      memberType,
-      reason,
-      selectedMembers,
-    });
+    RequestTeamMember();
     alert("Request submitted successfully!");
     setMemberType("");
     setReason("");
