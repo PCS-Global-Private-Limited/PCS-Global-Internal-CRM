@@ -3,6 +3,7 @@ import { User, Calendar, CheckCircle, Clock, AlertCircle } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { Link, useNavigate } from "react-router-dom";
 import { checkAuth } from "../lib";
+import axios from "axios";
 
 const getStatusColor = (status) => {
   switch (status) {
@@ -20,6 +21,8 @@ export default function UserDashboard() {
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [checkIn, setCheckIn] = useState(false);
+  const [checkOut, setCheckOut] = useState(false);
 
   const verifyAuth = async () => {
     const authStatus = await checkAuth();
@@ -36,6 +39,50 @@ export default function UserDashboard() {
   useEffect(() => {
     verifyAuth();
   }, []);
+
+  const checkCheckInStatus = async () => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendance/check-in-status`,
+        {
+          withCredentials: true, // ✅ Important for cookies
+        }
+      );
+
+      if (data.checkedIn) {
+        alert("✅ User is already checked-in!");
+        setCheckIn(true);
+      } else {
+        alert("ℹ️ User has not checked-in yet!");
+        setCheckIn(false);
+      }
+    } catch (error) {
+      console.error("Error checking status:", error);
+      alert("❌ Failed to check status");
+    }
+  };
+
+  const checkCheckOutStatus = async () => {
+    try {
+      const { data } = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/attendance/check-out-status`,
+        {
+          withCredentials: true, // ✅ Important for cookies
+        }
+      );
+
+      if (data.checkedOut) {
+        alert("✅ User is already checked-out!");
+        setCheckOut(true);
+      } else {
+        alert("ℹ️ User has not checked-out yet!");
+        setCheckOut(false);
+      }
+    } catch (error) {
+      console.error("Error checking status:", error);
+      alert("❌ Failed to check status");
+    }
+  };
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -62,6 +109,8 @@ export default function UserDashboard() {
     };
 
     fetchTasks();
+    checkCheckInStatus()
+    checkCheckOutStatus()
   }, []);
 
   useEffect(() => {
@@ -81,6 +130,63 @@ export default function UserDashboard() {
 
   const handleProjectDetails = (id) => {
     navigate(`/user-dashboard/project-details/${id}`);
+  };
+
+  const handleCheckIn = async () => {
+    try {
+      // setLoading(true);
+      // setMessage("");
+
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/checkin`, {}, {
+        withCredentials: true, // ✅ Send cookies automatically
+      });
+
+      console.log("data:", data);
+
+
+      if (data.success) {
+        // setMessage("✅ " + data.message);
+        alert("Checked in successfully");
+        setCheckIn(true);
+      } else {
+        // setMessage("⚠️ " + data.message);
+        alert("⚠️ " + data.message);
+        setCheckIn(false);
+      }
+    } catch (error) {
+      // setMessage("❌ " + (error.response?.data?.message || "Something went wrong"));
+      alert("❌ " + (error.response?.data?.message || "Something went wrong"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Handle Check-Out
+  const handleCheckOut = async () => {
+    try {
+      setLoading(true);
+
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/checkout`, {}, // No body needed if just checking out
+        {
+          withCredentials: true, // ✅ Send cookies automatically
+        })
+
+      console.log("data:", data);
+
+      if (data.success) {
+        alert("Checked out successfully");
+        setCheckOut(true);
+        setCheckIn(false);
+      } else {
+        alert("⚠️ " + data.message);
+        // If checkout failed, keep checkIn as true and checkOut as false
+        setCheckIn(true);
+        setCheckOut(false);
+      }
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRequestTeamMenber = (id,title) => {
@@ -195,11 +301,22 @@ export default function UserDashboard() {
         </div>
 
         {/* Start Work Button */}
-        <div className="mt-8">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-            Start work
-          </button>
-        </div>
+        {
+          checkOut ?
+            <div className="mt-8">Your attendance is already marked for today</div>
+            : checkIn ?
+              <div className="mt-8">
+                <button onClick={handleCheckOut} className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  Check-Out
+                </button>
+              </div>
+              :
+              <div className="mt-8">
+                <button onClick={handleCheckIn} className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  Check-In
+                </button>
+              </div>
+        }
       </main>
     </div>
   );
