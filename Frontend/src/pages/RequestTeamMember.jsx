@@ -119,6 +119,7 @@ export default function RequestTeamMember() {
           },
           body: JSON.stringify({
             memberType: memberType,
+            projectId: projectId,
             projectTitle: projectTitle,
             reason: reason,
             selectedMembers: selectedMembers,

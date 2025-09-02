@@ -12,7 +12,7 @@ export const requestTeamMember = async (req, res) => {
     // Decode JWT to verify sender (optional, since senderId is also coming in body)
     const decoded = jwt.verify(token, process.env.JWT_SECRET || "secret");
 
-    const { memberType, projectTitle, reason, selectedMembers, senderId } = req.body;
+    const { memberType, projectTitle,projectId, reason, selectedMembers, senderId } = req.body;
 
     if (!memberType || !projectTitle || !reason || !selectedMembers || selectedMembers.length === 0) {
       return res.status(400).json({ success: false, message: "All fields are required" });
@@ -21,6 +21,7 @@ export const requestTeamMember = async (req, res) => {
     const request = await TeamMemberRequest.create({
       memberType,
       projectTitle,
+      projectId,
       reason,
       selectedMembers,
       senderId: senderId || decoded.userId, // fallback to logged-in user
