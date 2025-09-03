@@ -260,10 +260,10 @@ const DashboardContent = () => {
             );
 
             if (data.checkedIn) {
-                alert("✅ User is already checked-in!");
+                // alert("✅ User is already checked-in!");
                 setCheckIn(true);
             } else {
-                alert("ℹ️ User has not checked-in yet!");
+                // alert("ℹ️ User has not checked-in yet!");
                 setCheckIn(false);
             }
         } catch (error) {
@@ -282,10 +282,10 @@ const DashboardContent = () => {
             );
 
             if (data.checkedOut) {
-                alert("✅ User is already checked-out!");
+                // alert("✅ User is already checked-out!");
                 setCheckOut(true);
             } else {
-                alert("ℹ️ User has not checked-out yet!");
+                // alert("ℹ️ User has not checked-out yet!");
                 setCheckOut(false);
             }
         } catch (error) {
@@ -496,7 +496,7 @@ const DashboardContent = () => {
                                             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-medium mr-4">
                                                 {employee.avatar}
                                             </div>
-                                            <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(employee.status)}`}></div>
+                                            <div className={`absolute -bottom-1 w-4 h-4 rounded-full border-2 border-white ${getStatusColor(employee.status)}`}></div>
                                         </div>
                                         <div>
                                             <p className="font-medium text-gray-900">{employee.name}</p>

@@ -50,10 +50,10 @@ export default function UserDashboard() {
       );
 
       if (data.checkedIn) {
-        alert("✅ User is already checked-in!");
+        // alert("✅ User is already checked-in!");
         setCheckIn(true);
       } else {
-        alert("ℹ️ User has not checked-in yet!");
+        // alert("ℹ️ User has not checked-in yet!");
         setCheckIn(false);
       }
     } catch (error) {
@@ -72,15 +72,15 @@ export default function UserDashboard() {
       );
 
       if (data.checkedOut) {
-        alert("✅ User is already checked-out!");
+        // alert("✅ User is already checked-out!");
         setCheckOut(true);
       } else {
-        alert("ℹ️ User has not checked-out yet!");
+        // alert("ℹ️ User has not checked-out yet!");
         setCheckOut(false);
       }
     } catch (error) {
       console.error("Error checking status:", error);
-      alert("❌ Failed to check status");
+      // alert("❌ Failed to check status");
     }
   };
 

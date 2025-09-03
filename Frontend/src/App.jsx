@@ -89,7 +89,7 @@ const router = createBrowserRouter([
     element: <EmployeeDetails />,
   },
   {
-    path: "/employee-addition-requests/add-employee",
+    path: "/employee-addition-requests/:id",
     element: <AddEmployeeRequest />,
   },
 ]);

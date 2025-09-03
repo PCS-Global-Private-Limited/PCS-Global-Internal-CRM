@@ -55,15 +55,17 @@ const Sidebar = ({ activeItem, onItemClick }) => {
 
             {/* Profile Section */}
             <div className="p-4 border-t border-gray-100">
-                <div className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors group">
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                        A
+                <Link to="/user-dashboard/profile">
+                    <div className="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors group">
+                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                            A
+                        </div>
+                        <div className="flex-1">
+                            <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">My Profile</span>
+                            <div className="text-xs text-gray-500">Admin</div>
+                        </div>
                     </div>
-                    <div className="flex-1">
-                        <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">My Profile</span>
-                        <div className="text-xs text-gray-500">Admin</div>
-                    </div>
-                </div>
+                </Link>
             </div>
         </div>
     );
