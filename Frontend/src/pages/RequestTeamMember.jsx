@@ -3,6 +3,7 @@ import { ArrowLeft, User, Search, Check, Mail, Phone } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useParams } from "react-router-dom";
 import { checkAuth } from "../lib";
+import { useNavigate } from "react-router-dom";
 
 export default function RequestTeamMember() {
   const [project, setProject] = useState("");
@@ -14,6 +15,8 @@ export default function RequestTeamMember() {
   const { projectId, projectTitle } = useParams();
   const [employee, setEmployee] = useState();
   const [senderId, setSenderId] = useState();
+
+  const navigate = useNavigate();
 
   const verifyAuth = async () => {
     const authStatus = await checkAuth();
@@ -137,9 +140,40 @@ export default function RequestTeamMember() {
     }
   };
 
+  const updateRequestTeamMember = async (taskId) => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_API_URL
+        }/api/task/update/request-team-member-status`,
+        {
+          method: "PUT",
+          credentials: "include", // important for cookie-based auth
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ taskId }),
+        }
+      );
+
+      const data = await response.json();
+      if (data.success) {
+        console.log("Task updated:", data.task);
+        alert("Request team member flag updated!");
+      } else {
+        console.error("Update failed:", data.message);
+      }
+    } catch (error) {
+      console.error("Error updating requestTeamMember:", error);
+    }
+  };
+
   const handleSubmit = () => {
     RequestTeamMember();
+    updateRequestTeamMember(projectId);
     alert("Request submitted successfully!");
+    navigate("/user-dashboard");
     setMemberType("");
     setReason("");
     setSelectedMembers([]);

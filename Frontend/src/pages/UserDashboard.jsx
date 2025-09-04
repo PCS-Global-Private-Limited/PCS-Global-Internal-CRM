@@ -109,8 +109,8 @@ export default function UserDashboard() {
     };
 
     fetchTasks();
-    checkCheckInStatus()
-    checkCheckOutStatus()
+    checkCheckInStatus();
+    checkCheckOutStatus();
   }, []);
 
   useEffect(() => {
@@ -119,9 +119,9 @@ export default function UserDashboard() {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case "Completed":
+      case "completed":
         return <CheckCircle className="w-4 h-4 text-green-600" />;
-      case "In progress":
+      case "in progress":
         return <Clock className="w-4 h-4 text-yellow-600" />;
       default:
         return <AlertCircle className="w-4 h-4 text-gray-600" />;
@@ -137,12 +137,15 @@ export default function UserDashboard() {
       // setLoading(true);
       // setMessage("");
 
-      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/checkin`, {}, {
-        withCredentials: true, // ✅ Send cookies automatically
-      });
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/attendance/checkin`,
+        {},
+        {
+          withCredentials: true, // ✅ Send cookies automatically
+        }
+      );
 
       console.log("data:", data);
-
 
       if (data.success) {
         // setMessage("✅ " + data.message);
@@ -166,10 +169,13 @@ export default function UserDashboard() {
     try {
       setLoading(true);
 
-      const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/attendance/checkout`, {}, // No body needed if just checking out
+      const { data } = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/attendance/checkout`,
+        {}, // No body needed if just checking out
         {
           withCredentials: true, // ✅ Send cookies automatically
-        })
+        }
+      );
 
       console.log("data:", data);
 
@@ -189,7 +195,7 @@ export default function UserDashboard() {
     }
   };
 
-  const handleRequestTeamMenber = (id,title) => {
+  const handleRequestTeamMenber = (id, title) => {
     navigate(`/user-dashboard/request-team-member/${id}/${title}`);
   };
 
@@ -266,22 +272,32 @@ export default function UserDashboard() {
                           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
                             task.myStatus
                           )}`}
-                        >
-                          {task.myStatus}
+                        >{task.overallStatus}
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <button
-                          onClick={() => handleRequestTeamMenber(task._id, task.title)}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                        >
-                          Request
-                        </button>
+                        {!task.requestTeamMember ? (
+                          <button
+                            onClick={() =>
+                              handleRequestTeamMenber(task._id, task.title)
+                            }
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium cursor-pointer"
+                          >
+                            Request
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => alert("Already Requested")}
+                            className="text-gray-600 hover:text-gray-800 text-sm font-medium cursor-pointer"
+                          >
+                            Already Requested
+                          </button>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
                           onClick={() => handleProjectDetails(task._id)}
-                          className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                          className="text-indigo-600 hover:text-indigo-800 text-sm font-medium cursor-pointer"
                         >
                           View Details
                         </button>
@@ -301,22 +317,29 @@ export default function UserDashboard() {
         </div>
 
         {/* Start Work Button */}
-        {
-          checkOut ?
-            <div className="mt-8">Your attendance is already marked for today</div>
-            : checkIn ?
-              <div className="mt-8">
-                <button onClick={handleCheckOut} className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                  Check-Out
-                </button>
-              </div>
-              :
-              <div className="mt-8">
-                <button onClick={handleCheckIn} className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                  Check-In
-                </button>
-              </div>
-        }
+        {checkOut ? (
+          <div className="mt-8">
+            Your attendance is already marked for today
+          </div>
+        ) : checkIn ? (
+          <div className="mt-8">
+            <button
+              onClick={handleCheckOut}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Check-Out
+            </button>
+          </div>
+        ) : (
+          <div className="mt-8">
+            <button
+              onClick={handleCheckIn}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Check-In
+            </button>
+          </div>
+        )}
       </main>
     </div>
   );

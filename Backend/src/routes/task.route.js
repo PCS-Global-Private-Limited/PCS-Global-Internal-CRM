@@ -1,7 +1,16 @@
 import express from "express";
 // import { getUserTasks, updateTaskStatus } from '../controllers/task.controller.js';
 // import { authenticateToken, validateSession } from '../middleware/auth.js';
-import { assignEmployeesToTask, createTask, getAllTasks,getMyTasks,getProjectDetails } from "../controllers/task.controller.js";
+import {
+  assignEmployeesToTask,
+  createTask,
+  getAllTasks,
+  getMyTasks,
+  getProjectDetails,
+  updateRequestTeamMember,
+  startTask,
+  endTask,
+} from "../controllers/task.controller.js";
 import { uploadDocuments } from "../config/uploadDoc.cloudinary.js";
 
 const taskRouter = express.Router();
@@ -14,6 +23,9 @@ taskRouter.get("/get-all", getAllTasks);
 taskRouter.get("/my-tasks", getMyTasks);
 taskRouter.put("/assign", assignEmployeesToTask);
 taskRouter.post("/upload-documents", uploadDocuments);
+taskRouter.put("/update/request-team-member-status", updateRequestTeamMember);
+taskRouter.put("/start-task", startTask);
+taskRouter.put("/end-task", endTask);
 
 taskRouter.get("/project-details/:projectId", getProjectDetails);
 

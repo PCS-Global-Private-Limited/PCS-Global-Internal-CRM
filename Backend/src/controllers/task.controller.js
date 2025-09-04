@@ -71,7 +71,7 @@ export const getMyTasks = async (req, res) => {
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: "Not authenticated"
+        message: "Not authenticated",
       });
     }
 
@@ -80,16 +80,16 @@ export const getMyTasks = async (req, res) => {
 
     // Find tasks where the authenticated user is assigned
     const tasks = await Task.find({
-      "assignees.userId": userId
+      "assignees.userId": userId,
     })
-    .populate("createdBy", "firstName lastName email")
-    .populate("assignees.userId", "firstName lastName email")
-    .sort({ createdAt: -1 });
+      .populate("createdBy", "firstName lastName email")
+      .populate("assignees.userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
 
     // Format response similar to the above function
-    const myTasks = tasks.map(task => {
+    const myTasks = tasks.map((task) => {
       const myAssignee = task.assignees.find(
-        assignee => assignee.userId._id.toString() === userId
+        (assignee) => assignee.userId._id.toString() === userId
       );
 
       return {
@@ -103,14 +103,15 @@ export const getMyTasks = async (req, res) => {
         createdAt: task.createdAt,
         updatedAt: task.updatedAt,
         myStatus: myAssignee ? myAssignee.status : "not assigned",
-        allAssignees: task.assignees
+        allAssignees: task.assignees,
+        requestTeamMember: task.requestTeamMember,
       };
     });
 
     const tasksByStatus = {
-      "not started": myTasks.filter(task => task.myStatus === "not started"),
-      "in progress": myTasks.filter(task => task.myStatus === "in progress"),
-      "completed": myTasks.filter(task => task.myStatus === "completed")
+      "not started": myTasks.filter((task) => task.myStatus === "not started"),
+      "in progress": myTasks.filter((task) => task.myStatus === "in progress"),
+      completed: myTasks.filter((task) => task.myStatus === "completed"),
     };
 
     res.status(200).json({
@@ -122,16 +123,15 @@ export const getMyTasks = async (req, res) => {
       summary: {
         notStarted: tasksByStatus["not started"].length,
         inProgress: tasksByStatus["in progress"].length,
-        completed: tasksByStatus["completed"].length
-      }
+        completed: tasksByStatus["completed"].length,
+      },
     });
-
   } catch (error) {
     console.error("Error fetching my tasks:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -139,12 +139,12 @@ export const getMyTasks = async (req, res) => {
 export const getProjectDetails = async (req, res) => {
   try {
     const { projectId } = req.params;
-    
+
     // Validate projectId
     if (!projectId) {
       return res.status(400).json({
         success: false,
-        message: "Project ID is required"
+        message: "Project ID is required",
       });
     }
 
@@ -152,7 +152,7 @@ export const getProjectDetails = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid project ID format"
+        message: "Invalid project ID format",
       });
     }
 
@@ -165,37 +165,48 @@ export const getProjectDetails = async (req, res) => {
     if (!project) {
       return res.status(404).json({
         success: false,
-        message: "Project not found"
+        message: "Project not found",
       });
     }
 
     // Calculate project statistics
     const totalAssignees = project.assignees.length;
-    const completedAssignees = project.assignees.filter(a => a.status === "completed").length;
-    const inProgressAssignees = project.assignees.filter(a => a.status === "in progress").length;
-    const notStartedAssignees = project.assignees.filter(a => a.status === "not started").length;
+    const completedAssignees = project.assignees.filter(
+      (a) => a.status === "completed"
+    ).length;
+    const inProgressAssignees = project.assignees.filter(
+      (a) => a.status === "in progress"
+    ).length;
+    const notStartedAssignees = project.assignees.filter(
+      (a) => a.status === "not started"
+    ).length;
 
     // Calculate completion percentage
-    const completionPercentage = totalAssignees > 0 ? 
-      Math.round((completedAssignees / totalAssignees) * 100) : 0;
+    const completionPercentage =
+      totalAssignees > 0
+        ? Math.round((completedAssignees / totalAssignees) * 100)
+        : 0;
 
     // Check if project is overdue
     const currentDate = new Date();
     const deadline = new Date(project.deadline);
-    const isOverdue = currentDate > deadline && project.overallStatus !== "completed";
-    
+    const isOverdue =
+      currentDate > deadline && project.overallStatus !== "completed";
+
     // Calculate days until deadline (negative if overdue)
-    const daysUntilDeadline = Math.ceil((deadline - currentDate) / (1000 * 60 * 60 * 24));
+    const daysUntilDeadline = Math.ceil(
+      (deadline - currentDate) / (1000 * 60 * 60 * 24)
+    );
 
     // Format assignees with additional details
-    const formattedAssignees = project.assignees.map(assignee => ({
+    const formattedAssignees = project.assignees.map((assignee) => ({
       _id: assignee.userId._id,
       firstName: assignee.userId.firstName,
       lastName: assignee.userId.lastName,
       email: assignee.userId.email,
       role: assignee.userId.role,
       status: assignee.status,
-      fullName: `${assignee.userId.firstName} ${assignee.userId.lastName}`
+      fullName: `${assignee.userId.firstName} ${assignee.userId.lastName}`,
     }));
 
     // Prepare detailed project response
@@ -208,7 +219,7 @@ export const getProjectDetails = async (req, res) => {
       overallStatus: project.overallStatus,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt,
-      
+
       // Creator details
       createdBy: {
         _id: project.createdBy._id,
@@ -216,58 +227,61 @@ export const getProjectDetails = async (req, res) => {
         lastName: project.createdBy.lastName,
         email: project.createdBy.email,
         role: project.createdBy.role,
-        fullName: `${project.createdBy.firstName} ${project.createdBy.lastName}`
+        fullName: `${project.createdBy.firstName} ${project.createdBy.lastName}`,
       },
-      
+
       // Assignees details
       assignees: formattedAssignees,
-      
+
       // Project statistics
       statistics: {
         totalAssignees,
         completedAssignees,
         inProgressAssignees,
         notStartedAssignees,
-        completionPercentage
+        completionPercentage,
       },
-      
+
       // Timeline information
       timeline: {
         isOverdue,
         daysUntilDeadline,
-        deadlineStatus: isOverdue ? "overdue" : 
-                       daysUntilDeadline <= 3 ? "urgent" : 
-                       daysUntilDeadline <= 7 ? "soon" : "normal"
+        deadlineStatus: isOverdue
+          ? "overdue"
+          : daysUntilDeadline <= 3
+          ? "urgent"
+          : daysUntilDeadline <= 7
+          ? "soon"
+          : "normal",
       },
-      
+
       // Document information
       documents: {
         count: project.documentUrls ? project.documentUrls.length : 0,
-        urls: project.documentUrls || []
-      }
+        urls: project.documentUrls || [],
+      },
     };
 
     res.status(200).json({
       success: true,
       message: "Project details retrieved successfully",
-      project: projectDetails
+      project: projectDetails,
     });
-
   } catch (error) {
     console.error("Error fetching project details:", error);
-    
+
     // Handle specific MongoDB errors
-    if (error.name === 'CastError') {
+    if (error.name === "CastError") {
       return res.status(400).json({
         success: false,
-        message: "Invalid project ID format"
+        message: "Invalid project ID format",
       });
     }
-    
+
     res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -277,7 +291,6 @@ export const assignEmployeesToTask = async (req, res) => {
     const { taskId, employees } = req.body;
 
     console.log("Assigning employees:", employees, "to task:", taskId);
-    
 
     // Validate inputs
     if (!taskId || !employees || !Array.isArray(employees)) {
@@ -443,4 +456,62 @@ export const deleteTask = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
+};
+
+// ✅ Update requestTeamMember flag (false → true)
+export const updateRequestTeamMember = async (req, res) => {
+  try {
+    const { taskId } = req.body;
+
+    if (!taskId) {
+      return res.status(400).json({
+        success: false,
+        message: "Task ID is required",
+      });
+    }
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      taskId,
+      { $set: { requestTeamMember: true } },
+      { new: true }
+    );
+
+    if (!updatedTask) {
+      return res.status(404).json({
+        success: false,
+        message: "Task not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Request Team Member updated successfully",
+      task: updatedTask,
+    });
+  } catch (error) {
+    console.error("Error updating requestTeamMember:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+};
+
+export const startTask = async (req, res) => {
+  try {
+    const { taskId } = req.body;
+    const t = await Task.findByIdAndUpdate(taskId, { overallStatus: "in progress" }, { new: true });
+    if (!t) return res.status(404).json({ success:false, message:"Task not found" });
+    res.json({ success:true, message:"Project started", task:t });
+  } catch (e) { res.status(500).json({ success:false, message:e.message }); }
+};
+
+export const endTask = async (req, res) => {
+  try {
+    const { taskId } = req.body;
+    const t = await Task.findByIdAndUpdate(taskId, { overallStatus: "completed" }, { new: true });
+    if (!t) return res.status(404).json({ success:false, message:"Task not found" });
+    res.json({ success:true, message:"Project ended", task:t });
+  } catch (e) { res.status(500).json({ success:false, message:e.message }); }
 };

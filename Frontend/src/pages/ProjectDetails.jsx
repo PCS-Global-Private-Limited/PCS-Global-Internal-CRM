@@ -14,8 +14,9 @@ import Navbar from "../components/Navbar";
 export default function ProjectDetails() {
   const [comment, setComment] = useState("");
   const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const { id: projectId } = useParams();
+  const [hasStarted, setHasStarted] = useState(false);
 
   const fetchProjectDetails = async () => {
     setLoading(true);
@@ -34,6 +35,8 @@ export default function ProjectDetails() {
       const data = await response.json();
       if (data.success) {
         setProject(data.project);
+        setHasStarted(data.project.overallStatus === "in progress");
+        console.log(data);
       } else {
         console.error("Failed to fetch project details:", data.message);
       }
@@ -60,6 +63,37 @@ export default function ProjectDetails() {
     }
   };
 
+  const startProject = async () => {
+    // OPTIONAL backend update (uncomment when you have an endpoint)
+    await fetch(`${import.meta.env.VITE_API_URL}/api/task/start-task`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ taskId: projectId }),
+    });
+
+    setHasStarted(true);
+    setProject((p) => (p ? { ...p, overallStatus: "in progress" } : p));
+    alert("Project started!");
+  };
+
+  const endProject = async () => {
+    const ok = window.confirm("Are you sure you want to end this project?");
+    if (!ok) return;
+
+    // OPTIONAL backend update (uncomment when you have an endpoint)
+    await fetch(`${import.meta.env.VITE_API_URL}/api/task/end-task`, {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ taskId: projectId }),
+    });
+
+    setHasStarted(false);
+    setProject((p) => (p ? { ...p, overallStatus: "completed" } : p));
+    alert("Project ended!");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="sticky top-0 z-50">
@@ -78,27 +112,66 @@ export default function ProjectDetails() {
               </div>
             ) : project ? (
               <>
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-2xl font-bold text-gray-900">
-                      {project.title}
-                    </h2>
-                    <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                      project.overallStatus === 'completed' ? 'bg-green-100 text-green-800' :
-                      project.overallStatus === 'in progress' ? 'bg-orange-100 text-orange-800' :
-                      'bg-gray-100 text-gray-800'
-                    }`}>
-                      <Clock className="w-4 h-4 mr-1" />
-                      {project.overallStatus.charAt(0).toUpperCase() + project.overallStatus.slice(1)}
-                    </span>
-                  </div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold text-gray-900">
+                    {project.title}
+                  </h2>
 
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                        project.overallStatus === "completed"
+                          ? "bg-green-100 text-green-800"
+                          : project.overallStatus === "in progress"
+                          ? "bg-orange-100 text-orange-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      <Clock className="w-4 h-4 mr-1" />
+                      {project.overallStatus.charAt(0).toUpperCase() +
+                        project.overallStatus.slice(1)}
+                    </span>
+
+                    {/* Start / End button logic */}
+                    {project.overallStatus === "completed" ? (
+                      <button
+                        type="button"
+                        disabled
+                        className="px-4 py-2 rounded-md text-white text-sm font-medium bg-gray-300 cursor-not-allowed"
+                        title="Project already completed"
+                      >
+                        Completed
+                      </button>
+                    ) : hasStarted ? (
+                      <button
+                        type="button"
+                        onClick={endProject}
+                        className="px-4 py-2 rounded-md text-white text-sm font-medium bg-red-600 hover:bg-red-700"
+                        title="End Project"
+                      >
+                        End Project
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={startProject}
+                        className="px-4 py-2 rounded-md text-white text-sm font-medium bg-green-600 hover:bg-green-700"
+                        title="Start Project"
+                      >
+                        Start Project
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                   <div className="flex items-center text-sm text-gray-600 mb-6">
                     <Calendar className="w-4 h-4 mr-2" />
-                    Due by {new Date(project.deadline).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
+                    Due by{" "}
+                    {new Date(project.deadline).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
                     })}
                   </div>
 
@@ -115,7 +188,9 @@ export default function ProjectDetails() {
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
                         className="bg-blue-600 h-2 rounded-full"
-                        style={{ width: `${project.statistics.completionPercentage}%` }}
+                        style={{
+                          width: `${project.statistics.completionPercentage}%`,
+                        }}
                       ></div>
                     </div>
                   </div>
@@ -132,28 +207,33 @@ export default function ProjectDetails() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Created By
                       </label>
-                      <p className="text-gray-900">{project.createdBy.fullName} ({project.createdBy.role})</p>
+                      <p className="text-gray-900">
+                        {project.createdBy.fullName} ({project.createdBy.role})
+                      </p>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Description
                       </label>
-                      <p className="text-gray-900">
-                        {project.description}
-                      </p>
+                      <p className="text-gray-900">{project.description}</p>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Status
                       </label>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                        project.overallStatus === 'completed' ? 'bg-green-100 text-green-800' :
-                        project.overallStatus === 'in progress' ? 'bg-orange-100 text-orange-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {project.overallStatus.charAt(0).toUpperCase() + project.overallStatus.slice(1)}
+                      <span
+                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          project.overallStatus === "completed"
+                            ? "bg-green-100 text-green-800"
+                            : project.overallStatus === "in progress"
+                            ? "bg-orange-100 text-orange-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {project.overallStatus.charAt(0).toUpperCase() +
+                          project.overallStatus.slice(1)}
                       </span>
                     </div>
 
@@ -161,12 +241,16 @@ export default function ProjectDetails() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Timeline
                       </label>
-                      <p className={`text-sm ${
-                        project.timeline.deadlineStatus === 'overdue' ? 'text-red-600' :
-                        project.timeline.deadlineStatus === 'urgent' ? 'text-orange-600' :
-                        'text-gray-600'
-                      }`}>
-                        {project.timeline.isOverdue ? 'Overdue by ' : 'Due in '}
+                      <p
+                        className={`text-sm ${
+                          project.timeline.deadlineStatus === "overdue"
+                            ? "text-red-600"
+                            : project.timeline.deadlineStatus === "urgent"
+                            ? "text-orange-600"
+                            : "text-gray-600"
+                        }`}
+                      >
+                        {project.timeline.isOverdue ? "Overdue by " : "Due in "}
                         {Math.abs(project.timeline.daysUntilDeadline)} days
                       </p>
                     </div>
@@ -188,12 +272,15 @@ export default function ProjectDetails() {
 
                 <div className="space-y-2">
                   {project.documents.urls.map((url, index) => (
-                    <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg">
+                    <div
+                      key={index}
+                      className="flex items-center p-3 bg-gray-50 rounded-lg"
+                    >
                       <Paperclip className="w-5 h-5 text-gray-400 mr-3" />
                       <span className="text-sm font-medium text-gray-900 flex-1">
-                        {decodeURIComponent(url.split('/').pop())}
+                        {decodeURIComponent(url.split("/").pop())}
                       </span>
-                      <a 
+                      <a
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -276,7 +363,10 @@ export default function ProjectDetails() {
 
                 <div className="space-y-3">
                   {project.assignees.map((member) => (
-                    <div key={member._id} className="flex items-center space-x-3">
+                    <div
+                      key={member._id}
+                      className="flex items-center space-x-3"
+                    >
                       <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
                         <User className="w-6 h-6 text-gray-600" />
                       </div>
@@ -285,12 +375,17 @@ export default function ProjectDetails() {
                           {member.fullName}
                         </p>
                         <div className="flex items-center mt-1">
-                          <span className={`text-xs px-2 py-1 rounded-full ${
-                            member.status === 'completed' ? 'bg-green-100 text-green-800' :
-                            member.status === 'in progress' ? 'bg-orange-100 text-orange-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
+                          <span
+                            className={`text-xs px-2 py-1 rounded-full ${
+                              member.status === "completed"
+                                ? "bg-green-100 text-green-800"
+                                : member.status === "in progress"
+                                ? "bg-orange-100 text-orange-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {member.status.charAt(0).toUpperCase() +
+                              member.status.slice(1)}
                           </span>
                         </div>
                       </div>

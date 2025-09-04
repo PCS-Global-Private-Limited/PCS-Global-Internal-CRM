@@ -49,6 +49,10 @@ const taskSchema = new mongoose.Schema(
       enum: ["unassigned", "not started", "in progress", "completed"],
       default: "unassigned", // By default agar koi assignee nahi hai
     },
+    requestTeamMember: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true, // createdAt & updatedAt fields automatically add honge
